@@ -55,16 +55,17 @@ def get_podcasts(genre, page):
 
     return podcasts
 
-def pod_metadata_parser(xml):
+def pod_metadata_parser(xml, podcast_id):
     """
     Returns a dictionary with key:value pairs for things of interest
     in iTunes reviews
 
-    Parameters:
+    Parameters
     xml: first entry in xml returned by request made to iTunes review
     pages
+    podcast_id: unique iTunes podcast id derived from url
 
-    Returns:
+    Returns
     pod_dict: dictionary with keys [title, last_update, iTunes_url
     name, category, publisher, image_url] and their corresponding values
     """
@@ -76,6 +77,8 @@ def pod_metadata_parser(xml):
     pod_dict["category"] = xml.find("category").attrs["label"]
     pod_dict["publisher"] = xml.find("im:artist").decode_contents()
     pod_dict["image_url"] = xml.find_all("im:image")[-1].decode_contents()
+    pod_dict["description"] = xml.find("summary").decode_contents()
+    pod_dict["podcast_id"] = podcast_id
     return pod_dict
 
 def review_parser(podcast_name, podcast_id, review):
@@ -97,10 +100,11 @@ def review_parser(podcast_name, podcast_id, review):
     review_dict["date"] = review.find("updated").decode_contents() #str timestamp
     review_dict["title"] = review.find("title").decode_contents()
     review_dict["user_id"] = (review.find("uri").decode_contents()
-                              .split("/")[-1])
+                              .split("/")[-1].strip(string.ascii_letters))
     review_dict["review_text"] = review.find("content").decode_contents()
     review_dict["rating"] = (int(review.find("im:rating")
                                  .decode_contents()))
+    review_dict["source_id"] = 1
     return review_dict
 
 def get_review_count(url):
@@ -160,23 +164,30 @@ def get_podcast_reviews(podcast_name, podcast_url):
         if r.status_code == 200:
             reviews = BeautifulSoup(r.text, "xml").find_all("entry")
             if page_index == 1:
-                podcast_metadata = pod_metadata_parser(reviews[0])
+                podcast_metadata = pod_metadata_parser(reviews[0], podcast_id)
             for review in reviews[1:]:
                 podcast_reviews.append(review_parser(podcast_name,
                                                      podcast_id,
                                                      review))
-            print("Success on page {} of {}".format(page_index, podcast_name))
+            print("Success on page {} of {} for {}".format(page_index,
+                                                           num_pages - 1,
+                                                           podcast_name))
             page_index += 1
             time.sleep(20)
         elif r.status_code == 403:
             time.sleep(60)
         elif r.status_code == 400:
-            scrape += 500
+            page_index += 500
+            print("Something went wrong!! (Error Code 400)")
+            print("{}\n{}\n{}".format(time.strftime("%Y-%m-%d %H:%M:%S",
+                                                      time.localtime()),
+                                                      podcast_name, r.text))
+            break
         else:
             print("Something went wrong!!")
             print("{}\n{}\n{}\n{}".format(time.strftime("%Y-%m-%d %H:%M:%S",
-                                                      time.localtime())),
+                                                      time.localtime()),
                                         podcast_name, r.status_code,
-                                        r.text)
+                                        r.text))
             break
     return podcast_metadata, podcast_reviews
