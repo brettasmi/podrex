@@ -8,6 +8,7 @@ import pandas as pd
 
 from bs4 import BeautifulSoup
 from collections import defaultdict
+from scipy.stats import exponnorm
 
 def get_subgenres(super_genre, page):
     """
@@ -55,7 +56,7 @@ def get_podcasts(genre, page):
 
     return podcasts
 
-def pod_metadata_parser(xml, podcast_id):
+def pod_metadata_parser(xml, podcast_id, podcast_url):
     """
     Returns a dictionary with key:value pairs for things of interest
     in iTunes reviews
@@ -72,7 +73,7 @@ def pod_metadata_parser(xml, podcast_id):
     pod_dict = {}
     pod_dict["title"] = xml.find("title").decode_contents()
     pod_dict["last_update"] = xml.find("updated").decode_contents()
-    pod_dict["iTunes_url"] = xml.find("id").decode_contents()
+    pod_dict["iTunes_url"] = podcast_url
     pod_dict["name"] = xml.find("im:name").decode_contents()
     pod_dict["category"] = xml.find("category").attrs["label"]
     pod_dict["publisher"] = xml.find("im:artist").decode_contents()
@@ -97,7 +98,7 @@ def review_parser(podcast_name, podcast_id, review):
     review_dict = {}
     review_dict["podcast_name"] = podcast_name
     review_dict["podcast_id"] = podcast_id
-    review_dict["date"] = review.find("updated").decode_contents() #str timestamp
+    review_dict["date"] = review.find("updated").decode_contents()
     review_dict["title"] = review.find("title").decode_contents()
     review_dict["user_id"] = (review.find("uri").decode_contents()
                               .split("/")[-1].strip(string.ascii_letters))
@@ -156,15 +157,25 @@ def get_podcast_reviews(podcast_name, podcast_url):
                 navigator=None, platform=None, device_type="desktop")}
     review_count = get_review_count(podcast_url)
     num_pages = math.ceil(review_count / 50) + 1
+    if num_pages > 11:
+        num_pages = 11
     while page_index < num_pages:
         url = ("https://itunes.apple.com/us/rss/customerreviews/"
-               "id={}/sortby=mostRecent/page={}/xml".format(podcast_id,
+               "id={}/sortby=mostHelpful/page={}/xml".format(podcast_id,
                                                             page_index))
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
             reviews = BeautifulSoup(r.text, "xml").find_all("entry")
             if page_index == 1:
-                podcast_metadata = pod_metadata_parser(reviews[0], podcast_id)
+                try:
+                    podcast_metadata = pod_metadata_parser(reviews[0], podcast_id, podcast_url)
+                except:
+                    print("Something went wrong!!")
+                    print("{}\n{}\n{}\n{}".format(time.strftime("%Y-%m-%d %H:%M:%S",
+                                                              time.localtime()),
+                                                podcast_name, r.status_code,
+                                                r.text))
+                    return None, None, False
             for review in reviews[1:]:
                 podcast_reviews.append(review_parser(podcast_name,
                                                      podcast_id,
@@ -173,9 +184,12 @@ def get_podcast_reviews(podcast_name, podcast_url):
                                                            num_pages - 1,
                                                            podcast_name))
             page_index += 1
-            time.sleep(20)
+            if num_pages == 2 or page_index == 10:
+                pass
+            else:
+                time.sleep(exponnorm.rvs(3, loc=20, scale=1, size=1))
         elif r.status_code == 403:
-            time.sleep(60)
+            time.sleep(exponnorm.rvs(20, loc=240, scale=1, size=1))
         elif r.status_code == 400:
             page_index += 500
             print("Something went wrong!! (Error Code 400)")
@@ -190,4 +204,4 @@ def get_podcast_reviews(podcast_name, podcast_url):
                                         podcast_name, r.status_code,
                                         r.text))
             break
-    return podcast_metadata, podcast_reviews
+    return podcast_metadata, podcast_reviews, True
