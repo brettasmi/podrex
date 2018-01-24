@@ -95,18 +95,21 @@ def review_parser(podcast_name, podcast_id, review):
     review_dict: dictionary with keys [podcast_name, podcast_id, date,
     title, user_id, review_text, rating]
     """
-    review_dict = {}
-    review_dict["podcast_name"] = podcast_name
-    review_dict["podcast_id"] = podcast_id
-    review_dict["date"] = review.find("updated").decode_contents()
-    review_dict["title"] = review.find("title").decode_contents()
-    review_dict["user_id"] = (review.find("uri").decode_contents()
-                              .split("/")[-1].strip(string.ascii_letters))
-    review_dict["review_text"] = review.find("content").decode_contents()
-    review_dict["rating"] = (int(review.find("im:rating")
-                                 .decode_contents()))
-    review_dict["source_id"] = 1
-    return review_dict
+    try:
+        review_dict = {}
+        review_dict["podcast_name"] = podcast_name
+        review_dict["podcast_id"] = podcast_id
+        review_dict["date"] = review.find("updated").decode_contents()
+        review_dict["title"] = review.find("title").decode_contents()
+        review_dict["user_id"] = (review.find("uri").decode_contents()
+                                  .split("/")[-1].strip(string.ascii_letters))
+        review_dict["review_text"] = review.find("content").decode_contents()
+        review_dict["rating"] = (int(review.find("im:rating")
+                                     .decode_contents()))
+        review_dict["source_id"] = 1
+        return review_dict, True
+    except:
+        return None, False
 
 def get_review_count(url):
     """
@@ -124,10 +127,13 @@ def get_review_count(url):
     request = True
     while request:
         if r.status_code == 200:
-            count = int(BeautifulSoup(r.text, "html.parser")
-                     .find("span", {"class":"rating-count"})
-                     .decode_contents().split()[0])
-            time.sleep(20)
+            try:
+                count = int(BeautifulSoup(r.text, "html.parser")
+                         .find("span", {"class":"rating-count"})
+                         .decode_contents().split()[0])
+            except:
+                count = 1
+            time.sleep(10)
             return count
         elif r.status_code == 403:
             time.sleep(60)
@@ -177,9 +183,12 @@ def get_podcast_reviews(podcast_name, podcast_url):
                                                 r.text))
                     return None, None, False
             for review in reviews[1:]:
-                podcast_reviews.append(review_parser(podcast_name,
-                                                     podcast_id,
-                                                     review))
+                curr_review, review_parse_success = review_parser(podcast_name,
+                                                    podcast_id, review)
+                if review_parse_success:
+                    podcast_reviews.append(curr_review)
+                else:
+                    pass
             print("Success on page {} of {} for {}".format(page_index,
                                                            num_pages - 1,
                                                            podcast_name))

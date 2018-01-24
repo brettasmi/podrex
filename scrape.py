@@ -11,8 +11,8 @@ def scrape():
     with open("scrape.log", "a") as log:
         pm, pr, scrape_success = psi.get_podcast_reviews(podcast_name, itunes_url)
         if not scrape_success:
-            log.write("{}  |  failure to scrape on {}"
-                      .format(time.strftime("%Y-%m-%d %H:%M:%S\n",
+            log.write("{}  |  failure to scrape on {}\n"
+                      .format(time.strftime("%Y-%m-%d %H:%M:%S",
                                             time.localtime()),
                               podcast_name))
             conn, cursor = db.connect_db()
@@ -38,8 +38,8 @@ def scrape():
                 conn, cursor = db.connect_db()
         conn.commit()
         if review_success and metadata_success:
-            log.write("{}  |  success on {}"
-                      .format(time.strftime("%Y-%m-%d %H:%M:%S\n",
+            log.write("{}  |  success on {}\n"
+                      .format(time.strftime("%Y-%m-%d %H:%M:%S",
                                             time.localtime()), podcast_name))
 if __name__ == "__main__":
     while True:
