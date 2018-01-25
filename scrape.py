@@ -9,6 +9,7 @@ def scrape():
                    "WHERE itunes_url = (%s) ", [itunes_url])
     conn.commit()
     with open("scrape.log", "a") as log:
+        scrape_success = False
         pm, pr, scrape_success = psi.get_podcast_reviews(podcast_name, itunes_url)
         if not scrape_success:
             log.write("{}  |  failure to scrape on {}\n"
@@ -30,6 +31,7 @@ def scrape():
             conn, cursor = db.connect_db()
         conn.commit()
         for review in pr:
+            review_success = False
             review_success = db.update_reviews(review, conn, cursor)
             if not review_success:
                 log.write("{}  |  failure to update review on {}\n"
