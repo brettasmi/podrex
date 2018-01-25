@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>podrex</title>
+
+<script>
+predict = function(){
+      $.get({
+        url: "/predict/",
+        success: function(result){
+            $("#recommendations").html(result)
+        }
+      });
+    }
+</script>
+</head>
+
+<body>
+<h1>This is the best podcast recommender every built</h1>
+<button type="button" onclick="predict();">
+                    <span>Predict</span>
+                </button>
+<p id='recommendations'></p>
+<script src="../static/vendor/jquery/jquery.min.js"></script>
+</body>
+</html>
