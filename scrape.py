@@ -30,8 +30,8 @@ def scrape():
         #                                     time.localtime()), podcast_name))
         #     conn, cursor = db.connect_db()
         # conn.commit()
+        review_success = False
         for review in pr:
-            review_success = False
             review_success = db.update_reviews(review, conn, cursor)
             if not review_success:
                 log.write("{}  |  failure to update review on {}\n"
