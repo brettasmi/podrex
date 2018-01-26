@@ -23,13 +23,13 @@ def scrape():
                   [itunes_url])
             conn.commit()
             return None
-        metadata_success = db.update_metadata(pm, conn, cursor)
-        if not metadata_success:
-            log.write("{}  |  failure to update metadata on {}\n"
-                      .format(time.strftime("%Y-%m-%d %H:%M:%S",
-                                            time.localtime()), podcast_name))
-            conn, cursor = db.connect_db()
-        conn.commit()
+        # metadata_success = db.update_metadata(pm, conn, cursor)
+        # if not metadata_success:
+        #     log.write("{}  |  failure to update metadata on {}\n"
+        #               .format(time.strftime("%Y-%m-%d %H:%M:%S",
+        #                                     time.localtime()), podcast_name))
+        #     conn, cursor = db.connect_db()
+        # conn.commit()
         for review in pr:
             review_success = False
             review_success = db.update_reviews(review, conn, cursor)
@@ -39,7 +39,7 @@ def scrape():
                                                 time.localtime()), podcast_name))
                 conn, cursor = db.connect_db()
         conn.commit()
-        if review_success and metadata_success:
+        if review_success:# and metadata_success:
             log.write("{}  |  success on {}\n"
                       .format(time.strftime("%Y-%m-%d %H:%M:%S",
                                             time.localtime()), podcast_name))

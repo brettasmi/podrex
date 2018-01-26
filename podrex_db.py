@@ -66,27 +66,37 @@ def update_reviews(review, conn, cursor):
     Returns
     True on success, False on failure
     """
+
     try:
-        cursor.execute("INSERT INTO reviews "
-                       "(podcast_id, "
+        cursor.execute("INSERT INTO reviews3 "
+                       "(review_id, "
+                       "user_name, "
                        "user_id, "
-                       "rating, "
+                       "podcast_name, "
+                       "podcast_id, "
                        "date, "
                        "title, "
                        "review_text, "
-                       "source_id) "
-                       "VALUES (%s, %s, %s, %s, %s, %s, %s) ",
-                       (review["podcast_id"],
+                       "rating, "
+                       "source_id, "
+                       "method) "
+                       "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ",
+                       (review["review_id"],
+                        review["user_name"],
                         review["user_id"],
-                        review["rating"],
+                        review["podcast_name"],
+                        review["podcast_id"],
                         review["date"],
                         review["title"],
                         review["review_text"],
-                        review["source_id"]))
+                        review["rating"],
+                        review["source_id"],
+                        review["method"]))
         conn.commit()
         return True
     except:
-        print("problem with inserting {}".format(str(podcast_id)+str(user_id)))
+        print("problem with inserting {}".format(str(review["podcast_id"])
+                                                +str(review["user_id"])))
         return False
 
 def get_unprocessed_podcast(cursor):

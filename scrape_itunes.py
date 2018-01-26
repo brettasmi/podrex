@@ -82,7 +82,7 @@ def pod_metadata_parser(xml, podcast_id, podcast_url):
     pod_dict["podcast_id"] = podcast_id
     return pod_dict
 
-def review_parser(podcast_name, podcast_id, review):
+def review_parser(podcast_name, podcast_id, review, method):
     """
     Returns a dictionary with a key:value pairs for
     things of interest in iTunes reviews
@@ -92,21 +92,25 @@ def review_parser(podcast_name, podcast_id, review):
     has been decoded with "xml" parser from BeautifulSoup
 
     Output
-    review_dict: dictionary with keys [podcast_name, podcast_id, date,
-    title, user_id, review_text, rating]
+    review_dict: dictionary with keys [review_id, user_name, user_id,
+    podcast_name, podcast_id, date, title, review_text, rating, source_id,
+    method]
     """
     try:
         review_dict = {}
+        review_dict["review_id"] = int(review.find("id").decode_contents())
+        review_dict["user_name"] = review.find("name").decode_contents()
+        review_dict["user_id"] = int((review.find("uri").decode_contents()
+                                  .split("/")[-1].strip(string.ascii_letters)))
         review_dict["podcast_name"] = podcast_name
         review_dict["podcast_id"] = podcast_id
         review_dict["date"] = review.find("updated").decode_contents()
         review_dict["title"] = review.find("title").decode_contents()
-        review_dict["user_id"] = (review.find("uri").decode_contents()
-                                  .split("/")[-1].strip(string.ascii_letters))
         review_dict["review_text"] = review.find("content").decode_contents()
         review_dict["rating"] = (int(review.find("im:rating")
                                      .decode_contents()))
         review_dict["source_id"] = 1
+        review_dict["method"] = method
         return review_dict, True
     except:
         return None, False
@@ -167,7 +171,7 @@ def get_podcast_reviews(podcast_name, podcast_url):
         num_pages = 11
     while page_index < num_pages:
         url = ("https://itunes.apple.com/us/rss/customerreviews/"
-               "id={}/sortby=mostHelpful/page={}/xml".format(podcast_id,
+               "id={}/sortby=mostRecent/page={}/xml".format(podcast_id,
                                                             page_index))
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
@@ -184,7 +188,7 @@ def get_podcast_reviews(podcast_name, podcast_url):
                     return None, None, False
             for review in reviews[1:]:
                 curr_review, review_parse_success = review_parser(podcast_name,
-                                                    podcast_id, review)
+                                                    podcast_id, review, "newest")
                 if review_parse_success:
                     podcast_reviews.append(curr_review)
                 else:
