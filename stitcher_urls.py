@@ -141,7 +141,7 @@ def process_podcast(conn, cursor, log_file):
         cursor.execute("update stitcher set stitcher_url = 'problem' "
                        "where itunes_url = (%s)", [itunes_url])
         conn.commit()
-        time.sleep(exponnom.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 27, 1, 1))
         return None
     success = update_db(conn, cursor, itunes_url, search_url, search_name)
     if success:
