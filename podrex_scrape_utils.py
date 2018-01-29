@@ -316,8 +316,8 @@ def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_f
                                                       podcast_name))
         current_page += 1
         if current_index < total_reviews:
-            time.sleep(exponnorm.rvs(2, loc=5, scale=1, size=1))
-        
+            time.sleep(exponnorm.rvs(2, loc=19, scale=1, size=1))
+
 def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
                      log_file, max_episodes=50):
     """
