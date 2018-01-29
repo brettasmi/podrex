@@ -282,12 +282,12 @@ def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
                                                  podcast_url)
     if not parse_success:
         fail_handler(podcast_name, "parse first page", log_file)
-
+        return False, False, False
     # update podcast metadata database
     db_update_success = db.update_podcasts(podcast_dict, conn, cursor)
     if not db_update_success:
         fail_handler(podcast_name, "update podcast db", log_file)
-        pass
+        return False, False, False
     return podcast_dict, podcast_data, page_data
 
 def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_file):
