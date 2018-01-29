@@ -227,8 +227,10 @@ def process_podcast():
                                                                  podcast_id,
                                                                  conn, cursor,
                                                                  log_file)
-        if podcast_data == False:
+        if podcast_data == False or podcast_dict == False or page_data == False:
             time.sleep(exponnorm.rvs(24, loc=200, scale=1, size=1))
+            log_file.write("{} | failed on {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S",
+                                                      time.localtime()), podcast_name))
             return None
         total_reviews = podcast_dict["review_count"]
         time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
@@ -264,16 +266,16 @@ def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
                                 headers, log_file)
     if not success:
         fail_handler(podcast_name, "initial request", log_file)
-        return False, None, None
+        return False, False, False
     # get podcast page data
     podcast_data, page_data, data_success = process_podcast_request(response, 0,
                                             log_file, podcast_id=podcast_id)
     if podcast_data == False:
         fail_handler(podcast_name, "find first data", log_file)
-        return False, None, None
+        return False, False, False
     if not data_success:
         fail_handler(podcast_name, "find first data", log_file)
-        return False, None, None
+        return False, False, False
     # parse podcast data
     podcast_dict, parse_success = parse_metadata(podcast_data, page_data,
                                                  podcast_name, podcast_id,
@@ -346,7 +348,11 @@ def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
     Returns
     None
     """
-    episode_data = podcast_data["children"]
+    try:
+        episode_data = podcast_data["children"]
+    except:
+        logging.exception("failed to get episode list in process_episodes")
+        return None
     popularity_map = page_data["popularityMap"]["podcastEpisode"]
     episode_list = list(episode_data.keys())
     if len(episode_list) > max_episodes: #get most recent episode
