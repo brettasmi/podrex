@@ -15,6 +15,7 @@ from pyspark.ml.pipeline import Pipeline
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
 
+# connect to db
 conn, cursor = connect_db()
 
 reviews = cursor.fetchall()
@@ -29,7 +30,7 @@ spark_reviews_clean = spark_reviews.drop("date", "title_text", "review_text",
 (reviews_training, reviews_test) = spark_reviews_clean.randomSplit([0.8, 0.2])
 als_model = ALS(userCol="user_id", itemCol="podcast_id", ratingCol="rating",
                 coldStartStrategy="drop")
-                
+
 podrex = als_model.fit(reviews_training)
 
 predictions = podrex.transform(reviews_test)
