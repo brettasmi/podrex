@@ -231,14 +231,14 @@ def process_podcast():
             time.sleep(exponnorm.rvs(24, loc=200, scale=1, size=1))
             return None
         total_reviews = podcast_dict["review_count"]
-        time.sleep(exponnorm.rvs(2, loc=18, scale=1, size=1))
+        time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
         process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_file)
         process_episodes(podcast_data, page_data, podcast_id, conn, cursor, log_file)
         log_file.write("{} | success on {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                                   time.localtime()), podcast_name))
         print("{} | success on {}".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                             time.localtime()), podcast_name))
-        time.sleep(exponnorm.rvs(2, loc=18, scale=1, size=1))
+        time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
     db.mark_as_itunes(conn, cursor, podcast_url)
 
 def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
@@ -327,7 +327,7 @@ def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_f
                                                       podcast_name))
         current_page += 1
         if current_index < total_reviews:
-            time.sleep(exponnorm.rvs(2, loc=19, scale=1, size=1))
+            time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
 
 def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
                      log_file, max_episodes=50):
