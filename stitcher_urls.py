@@ -86,10 +86,10 @@ def parse_google_result(google_result):
         top_result = soup.find("h3",{"class":"r"}).find("a")
         search_url = top_result.attrs["href"]
         search_name = top_result.decode_contents().split("|")[0]
-        return search_url, search_name
+        return search_url, search_name, True
     except:
         logging.exception("failed to find top google result in parsing")
-
+        return None, None, False
 def update_db(conn, cursor, itunes_url, search_url, search_name):
     """
     Updates a row in the db with stitcher url and name
@@ -130,10 +130,19 @@ def process_podcast(conn, cursor, log_file):
     google_result, search_success = google_request(google_url, headers)
     if not search_success:
         print("failure on {}".format(podcast_name))
-        log_file.write("failure on {}".format(podcast_name))
+        log_file.write("failure on {}\n".format(podcast_name))
         time.sleep(exponnom.rvs(2, 27, 1, 1))
         return None
-    search_url, search_name = parse_google_result(google_result)
+    search_url, search_name, parse_success = parse_google_result(google_result)
+    if not parse_success:
+        print("failure on {}\n{}".format(podcast_name, google_result.text))
+        log_file.write("failure on {}\n{}".format(podcast_name,
+                                                  google_result.text))
+        cursor.execute("update stitcher set stitcher_url = 'problem' "
+                       "where itunes_url = (%s)", [itunes_url])
+        conn.commit()
+        time.sleep(exponnom.rvs(2, 27, 1, 1))
+        return None
     success = update_db(conn, cursor, itunes_url, search_url, search_name)
     if success:
         print("success on {}".format(podcast_name))
