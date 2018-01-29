@@ -94,12 +94,15 @@ def process_podcast_request(response, mode, f, podcast_id=None):
         try:
             soup = BeautifulSoup(response.text, "html.parser")
             scripts = soup.findAll('script')
-            podcast_data = (json.loads(scripts[2].decode_contents()[15:])
-                                       ["storePlatformData"]["product-dv-product"]
-                                       ["results"][podcast_id])
-            page_data = (json.loads(scripts[2].decode_contents()[15:])
-                                    ["pageData"]["podcastPageData"])
-
+            try:
+                podcast_data = (json.loads(scripts[2].decode_contents()[15:])
+                                           ["storePlatformData"]["product-dv-product"]
+                                           ["results"][podcast_id])
+                page_data = (json.loads(scripts[2].decode_contents()[15:])
+                                        ["pageData"]["podcastPageData"])
+            except KeyError:
+                logging.exception("failed with product-dv-product key error")
+                return False, False, False
             return podcast_data, page_data, True
         except:
             logging.exception("failed inside process_podcast_request, page 0")
@@ -224,6 +227,9 @@ def process_podcast():
                                                                  podcast_id,
                                                                  conn, cursor,
                                                                  log_file)
+        if podcast_data == False:
+            time.sleep(exponnorm.rvs(24, loc=200, scale=1, size=1))
+            return None
         total_reviews = podcast_dict["review_count"]
         time.sleep(exponnorm.rvs(2, loc=18, scale=1, size=1))
         process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_file)
@@ -258,13 +264,16 @@ def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
                                 headers, log_file)
     if not success:
         fail_handler(podcast_name, "initial request", log_file)
-        return None,
+        return False, None, None
     # get podcast page data
     podcast_data, page_data, data_success = process_podcast_request(response, 0,
                                             log_file, podcast_id=podcast_id)
+    if podcast_data == False:
+        fail_handler(podcast_name, "find first data", log_file)
+        return False, None, None
     if not data_success:
         fail_handler(podcast_name, "find first data", log_file)
-        return None
+        return False, None, None
     # parse podcast data
     podcast_dict, parse_success = parse_metadata(podcast_data, page_data,
                                                  podcast_name, podcast_id,
