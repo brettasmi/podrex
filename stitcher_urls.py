@@ -131,6 +131,8 @@ def process_podcast(conn, cursor, log_file):
     if not search_success:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}\n".format(podcast_name))
+        cursor.execute("update stitcher set stitcher_url = 'problem' "
+                       "where itunes_url = (%s)", [itunes_url])
         time.sleep(exponnorm.rvs(2, 27, 1, 1))
         return None
     search_url, search_name, parse_success = parse_google_result(google_result)
