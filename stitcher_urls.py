@@ -131,7 +131,7 @@ def process_podcast(conn, cursor, log_file):
     if not search_success:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}\n".format(podcast_name))
-        time.sleep(exponnom.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 27, 1, 1))
         return None
     search_url, search_name, parse_success = parse_google_result(google_result)
     if not parse_success:
@@ -151,7 +151,7 @@ def process_podcast(conn, cursor, log_file):
     else:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}".format(podcast_name))
-        time.sleep(exponnom.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 27, 1, 1))
 if __name__ == "__main__":
     conn, cursor = db.connect_db()
     while True:
