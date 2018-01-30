@@ -133,7 +133,12 @@ def parse_metadata(podcast_data, page_data, podcast_name, podcast_id,
         podcast_dict["podcast_name"] = podcast_name
         podcast_dict["arist_id"] = podcast_data["artistId"] # int
         podcast_dict["artist_name"] = podcast_data["artistName"] # varchar
-        podcast_dict["description"] = podcast_data["description"]["standard"] # text
+        try:
+            podcast_dict["description"] = podcast_data["description"]["standard"] #text
+        except:
+            logging.exception("failed to get podcast description normal way")
+            podcast_dict["description"] = (' '.join("{!s}={!s}".format(k,v)
+                                           for (k,v) in hi.items())) # text
         podcast_dict["feed_url"] = podcast_data["feedUrl"] # text
         podcast_dict["mean_rating"] = (podcast_data["userRating"]
                                        ["ariaLabelForRatings"].split()[0]) # float
