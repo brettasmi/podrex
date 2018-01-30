@@ -156,13 +156,15 @@ def get_stitcher_reviews(stitcher_id, headers, log_file,
         'stats.q0': 'reviews',
         'stats.q1': 'reviews'}
     reviews_page = requests.get(reviews_url, params=params, headers=headers)
-
+    print(f"status_code:{reviews_page.status_code}")
+    print(f"offset:{review_offset}, page_index:{page_index}, review_limit:{review_limit}")
     #reviews_page = requests.get(reviews_url, headers=headers)
     if reviews_page.status_code == 200:
         reviews_soup = BeautifulSoup(reviews_page.text,"lxml")
         try:
             page_data = json.loads(reviews_soup.find("p").decode_contents()[26:-1])
             reviews = page_data["BatchedResults"]["q1"]["Results"]
+            print(len(reviews))
             if len(reviews) == 0:
                 log_file.write("No reviews for {}\n".format(stitcher_id))
                 return "no_reviews", None, None, False
@@ -270,7 +272,7 @@ def process_stitcher_podcast(conn, cursor, log_file):
     total_reviews = 99
     page_index = 0
     while page_index * 99 < total_reviews:
-        print("trying page 1 of {}".format(podcast_id))
+        print(f"trying page {page_index} for podcast {podcast_id}")
         reviews, page_index, total_reviews, review_success = get_stitcher_reviews(
                                                                   stitcher_id,
                                                                   headers,
