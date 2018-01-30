@@ -85,8 +85,7 @@ def parse_stitcher_page(stitcher_page, log_file):
         log_file.write("".format(logging.exception("failed inside parse_stitcher_page")))
         return None, False
 
-def get_stitcher_reviews(stitcher_id, headers, log_file,
-                         total_reviews, page_index=0):
+def get_stitcher_reviews(stitcher_id, headers, log_file, page_index=0):
     """
     Returns dict(json) of stitcher reviews and review count
 
@@ -98,8 +97,8 @@ def get_stitcher_reviews(stitcher_id, headers, log_file,
     stitcher_reviews (list of dict): reviews to parse
     review_count(int): total review count
     """
-    review_offset = page_index * 99
-    review_limit = (page_index+1) * 99
+    review_offset = page_index * 100
+    review_limit = 100
     reviews_url = "https://api.bazaarvoice.com/data/batch.json"
     params = {
         'apiversion': '5.5',
@@ -269,15 +268,14 @@ def process_stitcher_podcast(conn, cursor, log_file):
     if not parse_success:
             stitcher_fail_handler(conn, cursor, stitcher_url, "parsing page", log_file)
             return None
-    total_reviews = 99
+    total_reviews = 100
     page_index = 0
-    while page_index * 99 < total_reviews:
+    while page_index * 100 < total_reviews:
         print(f"trying page {page_index} for podcast {podcast_id}")
         reviews, page_index, total_reviews, review_success = get_stitcher_reviews(
                                                                   stitcher_id,
                                                                   headers,
                                                                   log_file,
-                                                                  total_reviews,
                                                                   page_index=page_index)
         if not review_success:
             if reviews == "no_reviews":
