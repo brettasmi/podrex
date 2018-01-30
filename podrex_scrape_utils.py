@@ -136,9 +136,12 @@ def parse_metadata(podcast_data, page_data, podcast_name, podcast_id,
         try:
             podcast_dict["description"] = podcast_data["description"]["standard"] #text
         except:
-            logging.exception("failed to get podcast description normal way")
-            podcast_dict["description"] = (' '.join("{!s}={!s}".format(k,v)
-                                           for (k,v) in podcast_data["description"].items())) # text
+            try:
+                logging.exception("failed to get podcast description normal way")
+                podcast_dict["description"] = (' '.join("{!s}={!s}".format(k,v)
+                                               for (k,v) in podcast_data["description"].items())) # text
+            except:
+                logging.exception("failed to get description completely")
         podcast_dict["feed_url"] = podcast_data["feedUrl"] # text
         podcast_dict["mean_rating"] = (podcast_data["userRating"]
                                        ["ariaLabelForRatings"].split()[0]) # float
