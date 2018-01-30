@@ -261,15 +261,16 @@ def process_stitcher_podcast(conn, cursor, log_file):
     stitcher_page, request_success = request_stitcher_page(stitcher_url,
                                                    headers, log_file)
     if not request_success:
-            stitcher_fail_handler(stitcher_url, "requesting page", log_file)
+            stitcher_fail_handler(conn, cursor, stitcher_url, "requesting page", log_file)
             return None
     stitcher_id, parse_success = parse_stitcher_page(stitcher_page, log_file)
     if not parse_success:
-            stitcher_fail_handler(stitcher_url, "parsing page", log_file)
+            stitcher_fail_handler(conn, cursor, stitcher_url, "parsing page", log_file)
             return None
     total_reviews = 99
     page_index = 0
     while page_index * 99 < total_reviews:
+        print("trying page 1 of {}".format(podcast_id))
         reviews, page_index, total_reviews, review_success = get_stitcher_reviews(
                                                                   stitcher_id,
                                                                   headers,
@@ -288,11 +289,12 @@ def process_stitcher_podcast(conn, cursor, log_file):
             review_dict = parse_stitcher_review(podcast_id, review)
             review_update_success = update_reviews_stitcher(review_dict, conn, cursor)
             if not review_update_success:
-                stitcher_fail_handler(stitcher_url, "updating reviews", log_file)
+                stitcher_fail_handler(conn, cursor, stitcher_url, "updating reviews", log_file)
         total_pages = math.ceil(total_reviews / 99)
         print("Success on page {} of {} for {}".format(page_index, total_pages,
                                                         podcast_id))
         time.sleep(exponnorm.rvs(3, 20, 1, 1,))
+
     if review_update_success:
         mark_as_stitcher(conn, cursor, podcast_id)
 
