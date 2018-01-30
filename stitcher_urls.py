@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 from scipy.stats import exponnorm
 
 punc_regex = re.compile('[%s]' % re.escape(string.punctuation))
-headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36)"}
+headers = {"User-Agent":user_agent.generate_user_agent(os=None,
+           navigator=None, platform=None, device_type="desktop")}
 def get_podcast_name(conn, cursor):
     """
     Gets the name of a podcast from the database
@@ -61,14 +62,9 @@ def google_request(google_url, headers):
 
     Returns
     google_result (requests object)
-    True on success, False on failure
     """
     google_result = requests.get(google_url, headers=headers)
-    if google_result.status_code == 200:
-        return google_result, True
-    else:
-        print("failed to get {}".format(google_url))
-        return google_result, False
+    return google_result
 
 def parse_google_result(google_result):
     """
@@ -88,8 +84,13 @@ def parse_google_result(google_result):
         search_name = top_result.decode_contents().split("|")[0]
         return search_url, search_name, True
     except:
-        logging.exception("failed to find top google result in parsing")
-        return None, None, False
+        paragraphs = soup.findAll("p")
+        if ("did not match any documents" in
+            ''.join([p.decode_contents() for p in soup.findAll("p")])):
+            return True, True, False
+        else:
+            logging.exception("failed to find top google result in parsing")
+            return None, None, False
 def update_db(conn, cursor, itunes_url, search_url, search_name):
     """
     Updates a row in the db with stitcher url and name
@@ -127,33 +128,45 @@ def process_podcast(conn, cursor, log_file):
     """
     podcast_name, itunes_url = get_podcast_name(conn, cursor)
     google_url = google_url_constructor(podcast_name)
-    google_result, search_success = google_request(google_url, headers)
-    if not search_success:
+    google_result = google_request(google_url, headers)
+    if google_result.status_code == 503:
+        print("YOU'VE BEEN DISCOVERED!!!!")
+        time.sleep(3600)
+    elif google_result.status_code != 200:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}\n".format(podcast_name))
         cursor.execute("update stitcher set stitcher_url = 'problem' "
                        "where itunes_url = (%s)", [itunes_url])
-        time.sleep(exponnorm.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 45, 1, 1))
         return None
     search_url, search_name, parse_success = parse_google_result(google_result)
     if not parse_success:
-        print("failure on {}\n{}".format(podcast_name, google_result.text))
-        log_file.write("failure on {}\n{}".format(podcast_name,
-                                                  google_result.text))
-        cursor.execute("update stitcher set stitcher_url = 'problem' "
-                       "where itunes_url = (%s)", [itunes_url])
-        conn.commit()
-        time.sleep(exponnorm.rvs(2, 27, 1, 1))
-        return None
+        if search_url == True:
+            print("no results for {}".format(podcast_name))
+            log_file.write("no results for {}\n".format(podcast_name))
+            cursor.execute("UPDATE stitcher SET search_name = 'no result', "
+                           "stitcher_url = 'no result' "
+                           "WHERE itunes_url = (%s)", [itunes_url])
+            conn.commit()
+            return None
+        else:
+            print("failure on {}\n{}".format(podcast_name, google_result.text))
+            log_file.write("failure on {}\n{}".format(podcast_name,
+                                                      google_result.text))
+            cursor.execute("update stitcher set stitcher_url = 'problem' "
+                           "where itunes_url = (%s)", [itunes_url])
+            conn.commit()
+            time.sleep(exponnorm.rvs(2, 45, 1, 1))
+            return None
     success = update_db(conn, cursor, itunes_url, search_url, search_name)
     if success:
         print("success on {}".format(podcast_name))
         log_file.write("success on {}".format(podcast_name))
-        time.sleep(exponnorm.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 45, 1, 1))
     else:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}".format(podcast_name))
-        time.sleep(exponnorm.rvs(2, 27, 1, 1))
+        time.sleep(exponnorm.rvs(2, 45, 1, 1))
 if __name__ == "__main__":
     conn, cursor = db.connect_db()
     while True:
