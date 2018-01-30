@@ -148,6 +148,7 @@ def process_podcast(conn, cursor, log_file):
                            "stitcher_url = 'no result' "
                            "WHERE itunes_url = (%s)", [itunes_url])
             conn.commit()
+            time.sleep(exponnorm.rvs(2, 45, 1, 1))
             return None
         else:
             print("failure on {}\n{}".format(podcast_name, google_result.text))
