@@ -29,8 +29,7 @@ def get_stitcher_url(conn, cursor):
     cursor.execute("SELECT stitcher_url, podcast_id FROM podcasts "
                    "WHERE stitcher_url IS NOT NULL AND "
                    "stitcher_id IS NULL AND "
-                   "processed <> 'stitcher' AND "
-                   "processed <> 'in_stitcher' AND "
+                   "processed not in ('stitcher', 'in_stitcher') AND "
                    "podcast_id IS NOT NULL "
                    "LIMIT 1")
     result = cursor.fetchone()
