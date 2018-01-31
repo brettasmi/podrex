@@ -259,10 +259,12 @@ def process_stitcher_podcast(conn, cursor, log_file):
                                                    headers, log_file)
     if not request_success:
             stitcher_fail_handler(conn, cursor, stitcher_url, "requesting page", log_file)
+            time.sleep(exponnorm.rvs(3, 20, 1, 1,))
             return None
     stitcher_id, parse_success = parse_stitcher_page(stitcher_page, log_file)
     if not parse_success:
             stitcher_fail_handler(conn, cursor, stitcher_url, "parsing page", log_file)
+            time.sleep(exponnorm.rvs(3, 20, 1, 1,))
             return None
     total_reviews = 100
     page_index = 0
