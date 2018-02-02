@@ -12,8 +12,7 @@ from pyspark.ml.recommendation import ALS, ALSModel
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 
-
-if __name__=="__main__"
+def main():
     sc.setCheckpointDir('checkpoint/')
     ab3 = pd.read_pickle('data.pkl')
     spark_abpu_reviews = spark.createDataFrame(ab3)
@@ -44,3 +43,6 @@ if __name__=="__main__"
     spark_helpers.cv_info_dict = get_CV_info(cv_test_model)
     spark_helpers.param_writer(cv_info_dict, "param_tuning_results.txt")
     spark_helpers.spark_model_saver(cv_test_model, "best_model.sparkmodel")
+
+if __name__=="__main__":
+    main()
