@@ -39,10 +39,10 @@ def main():
         estimatorParamMaps=paramGrid,
         evaluator=RegressionEvaluator(metricName="rmse", labelCol="rating",
         predictionCol="prediction"), numFolds=5)
-    cvModel = crossval.fit(spark_abpu_training)
-    spark_helpers.cv_info_dict = get_CV_info(cv_test_model)
+    cv_model = crossval.fit(spark_abpu_training)
+    cv_info_dict = spark_helpers.get_CV_info(cv_model)
     spark_helpers.param_writer(cv_info_dict, "param_tuning_results.txt")
-    spark_helpers.spark_model_saver(cv_test_model, "best_model.sparkmodel")
+    spark_helpers.spark_model_saver(cv_model, "best_model.sparkmodel")
 
 if __name__=="__main__":
     main()
