@@ -25,6 +25,7 @@ def get_art(conn, cursor):
     art_url = res[1]
     cursor.execute("update podcasts set processed = 'getting_artwork' "
                    "where podcast_id = (%s)", [podcast_id])
+    conn.commit()
     file_extension_i = art_url.rfind(".")
     file_extension = art_url[file_extension_i:]
     try:
@@ -33,6 +34,7 @@ def get_art(conn, cursor):
         cursor.execute("update podcasts "
                        "set processed = 'getting_artwork' "
                        "where podcast_id = (%s)", [podcast_id])
+        conn.commit()
         return True, podcast_id, None
     except:
         return False, podcast_id, logging.exception()
@@ -54,12 +56,13 @@ def main():
                 else:
                     logfile.write(f"{f_time} | {trace}\n")
                     print(f"{f_time} | {trace}")
-                    time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
+                    time.sleep(exponnorm.rvs(2, loc=20, scale=1, size=1))
             cursor.execute("update podcasts "
                            "set processed = 'artwork' "
                            "where podcast_id = (%s)", [podcast_id])
+            conn.commit()
             logfile.write(f"{f_time} | Success on {podcast_id}\n")
             print(f"{f_time} | Success on {podcast_id}")
-            time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
+            time.sleep(exponnorm.rvs(2, loc=20, scale=1, size=1))
 if __name__ == "__main__":
     main()
