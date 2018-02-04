@@ -29,7 +29,7 @@ def get_art(conn, cursor):
     file_extension = art_url[file_extension_i:]
     try:
         urllib.request.urlretrieve(art_url,
-                                   f"{podcast_id}{file_extension}")
+                                   f"./artwork/{podcast_id}{file_extension}")
         cursor.execute("update podcasts "
                        "set processed = 'getting_artwork' "
                        "where podcast_id = (%s)", [podcast_id])
