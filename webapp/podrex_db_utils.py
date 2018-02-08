@@ -212,7 +212,7 @@ def get_prediction_info(conn, cursor, unique_id):
     try:
         cursor.execute("select predictions from user_data where user_id = (%s)",
                        [unique_id])
-        results = cursor.fetchone()[0][1]
+        results = cursor.fetchone()[0]
     except:
         logging.exception("failed to get unique_user_id")
         conn.rollback()
