@@ -11,10 +11,15 @@ from pyspark.ml.pipeline import Pipeline
 from pyspark.ml.recommendation import ALS, ALSModel
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+import pyspark as ps
+spark = ps.sql.SparkSession.builder \
+        .getOrCreate()
+
+sc = spark.sparkContext
 
 def main():
     sc.setCheckpointDir('checkpoint/')
-    ab3 = pd.read_pickle('data.pkl')
+    ab3 = pd.read_pickle('ab6.pkl')
     spark_abpu_reviews = spark.createDataFrame(ab3)
     spark_abpu_reviews_clean = spark_abpu_reviews.drop(
         "date", "title", "review_text", "source_id", "username",
@@ -29,8 +34,8 @@ def main():
                      checkpointInterval=2, maxIter=40)
     #ranktuning = np.linspace(20,85,13, endpoint=False)
     #regtuning = np.linspace(0.22, 0.29, 15, endpoint = False)
-    ranktuning = np.linspace(20,40,2, endpoint=False)
-    regtuning = np.linspace(0.22, 0.29, 2, endpoint = False)
+    ranktuning = np.linspace(20,40,10, endpoint=False)
+    regtuning = np.linspace(0.23, 0.28, 10, endpoint = False)
     paramGrid = ParamGridBuilder() \
         .addGrid(tuningALS.rank, ranktuning) \
         .addGrid(tuningALS.regParam, regtuning) \
