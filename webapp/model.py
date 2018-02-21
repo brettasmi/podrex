@@ -114,7 +114,7 @@ class PodcastRecommender:
                                      corresponding items
         """
         self._calculate_d(ratings, indices, V)
-        self._add_bonus(bonus_array, 1)
+        self._add_bonus(bonus_array, 4)
         self._add_nlp(ratings, indices, pairwise_dist_2d, 1)
         raw_recommendations = self._get_recommendations(bonus=True,
                                                      n_items=n_items)
