@@ -33,8 +33,9 @@ def predict():
     user_inputs = request.json
     parameters = user_inputs["parameters"]
     checkboxes = user_inputs["checkboxes"]
+    favorites = user_inputs["favorites"]
     ratings, indices = [], []
-    print(parameters, checkboxes)
+    print(parameters, checkboxes, favorites)
     for k, v in parameters.items():
         if v > 0:
             indices.append(int(k))
@@ -49,6 +50,15 @@ def predict():
             except ValueError:
                 indices.append(int(k))
                 ratings.append(0.1)
+    for k, v in favorites.items():
+        if k != "":
+            try:
+                pop_index = indices.index(int(k))
+                indices.pop(pop_index)
+                ratings.pop(pop_index)
+            except ValueError:
+                indices.append(int(k))
+                ratings.append(5)
     print(indices, ratings)
     predictions = model.fit_predict(ratings, indices)
     unique_id = db.set_unique_page(conn, cursor, predictions) # write func to make unique id

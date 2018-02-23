@@ -78,10 +78,11 @@ class PodcastRecommender:
         approx_d (numpy array): approximated d vector of length m representing
                                 predicted user ratings
         """
-        print(ratings, indices)
+        print(indices, ratings)
         self.ratings_array = np.array(ratings)
         self.ratings_indices = np.array(indices)
         self.V = V
+        print(self.V.shape)
         self.V_sub = self.V.T[:,self.ratings_indices]
         self.approx_u = np.linalg.lstsq(self.V_sub.T, self.ratings_array)
         self.approx_d = np.dot(self.approx_u[0], self.V.T)

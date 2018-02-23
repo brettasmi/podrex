@@ -49,17 +49,18 @@
             let favorite = null;
             for(let i = 0; i < favorites.length; i++) {
                     favorite = favorites[i];
-                  //  favorites.
-            }
-
-        }
+                    fave_parameters[$(favorite).val()] = 5;
+                }
+            return fave_parameters;
+        };
         submit = function() {
             parameters = get_selected_parameters()
             check_parameters = get_selected_checkboxes()
+            fave_parameters = get_favorites()
             $.post({
                 url: "/predictions/",
                 contentType: "application/json",
-                data: JSON.stringify({"parameters":parameters, "checkboxes":check_parameters}),
+                data: JSON.stringify({"parameters":parameters, "checkboxes":check_parameters, "favorites":fave_parameters}),
                 success: function(result){
                     {
                         window.location.href = '/recommendations/' + result;
@@ -154,10 +155,10 @@
                 <a>One of my favorite podcasts:</a>
               </h4>
               <div>
-               <select data-placeholder="Choose a Podcast..." class="chosen-select-deselect" tabindex="2" style="width:100%">
+               <select id="fave{{n}}" data-placeholder="Choose a podcast.." class="chosen-select-deselect" tabindex="2" style="width:100%">
                 <option value=""></option>
                 {% for podcast in podcasts %}
-                <option value="{{ podcast.0 }}" data-s-id="{{ podcast.1 }}">{{ podcast.0 }}</option>
+                <option value="{{ podcast.1 }}">{{ podcast.0 }}</option>
                 {% endfor %}
                </select>
               </div>
