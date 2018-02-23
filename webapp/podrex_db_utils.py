@@ -194,6 +194,32 @@ def set_unique_page(conn, cursor, predictions):
             conn.rollback()
     conn.commit()
     return unique_id
+def get_podcast_info(conn, cursor, podcast_list):
+    """
+    Returns list of information about items in spark_pids
+
+    Parameters
+    ----------
+    conn, cursor: active psycopg2 objects
+    podcast_list (list): list of spark_pids for which to retrieve information
+
+    Returns
+    -------
+    podcast_data (list of lists): list of lists of [podcast_id,
+        podcast_name, spark_pid, podcast_description]
+    """
+    try:
+        cursor.execute("select podcast_id, podcast_name, spark_pid, description, "
+                       "itunes_url, stitcher_url, website_url "
+                       "from podcasts where spark_pid in %(spark_pids)s",
+                       {"spark_pids":tuple(podcast_list)})
+        podcasts_raw = cursor.fetchall()
+        podcasts_data = [list(i) for i in podcasts_raw]
+        return podcasts_data
+    except:
+        logging.exception("failed to get podcast_info")
+        conn.rollback()
+        return None
 
 def get_prediction_info(conn, cursor, unique_id):
     """
@@ -202,7 +228,7 @@ def get_prediction_info(conn, cursor, unique_id):
     Parameters
     ----------
     conn, cursor: active psycopg2 objects
-    spark_pids (list): list of spark_pids for which to retrieve information
+    unique_id (str): unique alphanumeric id given to a set of predictions
 
     Returns
     -------
@@ -218,10 +244,5 @@ def get_prediction_info(conn, cursor, unique_id):
         conn.rollback()
         return None
 
-    cursor.execute("select podcast_id, podcast_name, spark_pid, description, "
-                   "itunes_url, stitcher_url, website_url "
-                   "from podcasts where spark_pid in %(spark_pids)s",
-                   {"spark_pids":tuple(results)})
-    recommendations_raw = cursor.fetchall()
-    recommendation_data = [list(i) for i in recommendations_raw]
+    recommendation_data = get_podcast_info(conn, cursor, results)
     return recommendation_data

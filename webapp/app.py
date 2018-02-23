@@ -15,16 +15,31 @@ with open("podcast_pid_list.pickle", "rb") as in_pickle:
 
 conn, cursor = db.connect_db()
 
-@app.route('/')
+@app.route("/")
 def index():
     """
     Returns home page to render to user
     """
     shuffle(to_rate_list)
-    return render_template('index.html', cards=to_rate_list,
+    return render_template("index.html", cards=to_rate_list,
                            podcasts=podcast_pid_list)
 
-@app.route('/predictions/', methods=['POST'])
+@app.route("/dd-update/", methods=["POST"])
+def dropdown_update():
+    """
+    Returns data to update the dropdown card
+    """
+    user_input = request.json
+    podcasts = []
+    podcasts.append(int(user_input["podcast"]))
+    podcast_info = db.get_podcast_info(conn, cursor, podcasts)[0]
+    print(podcast_info)
+    podcast_json = jsonify(podcast_name=podcast_info[1],
+                           podcast_art_id=podcast_info[0],
+                           podcast_description=podcast_info[3])
+    return podcast_json
+
+@app.route("/predictions/", methods=["POST"])
 def predict():
     """
     Gets predictions from the model and returns html
@@ -65,7 +80,7 @@ def predict():
     return unique_id
 
 
-@app.route('/recommendations/<unique_id>')
+@app.route("/recommendations/<unique_id>")
 def show_predictions(unique_id):
     """
     Returns personalized recommendation page to the user.
@@ -76,7 +91,7 @@ def show_predictions(unique_id):
     except:
         return render_template("sorry.html")
 def main():
-    app.run(host='0.0.0.0', threaded=True)
+    app.run(host="0.0.0.0", threaded=True)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
