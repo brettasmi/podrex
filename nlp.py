@@ -1,11 +1,12 @@
 # imports
 # database
-from podrex import podrex_db as db
+import podrex_db_utils as db
 # pandas, other tools
 import pandas as pd
 # text cleaning tools
 import string
 import re
+
 # nltk
 from nltk import tokenize
 from nltk.corpus import stopwords

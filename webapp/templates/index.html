@@ -16,6 +16,11 @@
     <!-- Custom styles for this template -->
     <link href="../static/css/4-col-portfolio.css" rel="stylesheet">
     <link href="../static/vendor/slider/slider.css" rel="stylesheet">
+
+    <!-- Chosen dropdown boxes CSS -->
+    <link href="../static/vendor/chosen/chosen.min.css" rel="stylesheet">
+    <!--<link href="../static/vendor/chosen/docsupport/prism.css" rel="stylesheet">-->
+
     <!-- rating dictionary creation via Matt Drury https://github.com/madrury/smoothers/blob/master/js/parameter-ui.js -->
     <script>
         get_selected_parameters = function() {
@@ -128,6 +133,29 @@
         </div>
         {% endfor %}
       </div>
+
+      <div class="row">
+       {% for n in range(4) %}
+        <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+          <div class="card h-100">
+            <a href="#"></a>
+            <div class="card-body">
+              <h4 class="card-title">
+                <a>One of my favorite podcasts:</a>
+              </h4>
+              <div>
+               <select data-placeholder="Choose a Podcast..." class="chosen-select-deselect" tabindex="2" style="width:100%">
+                <option value=""></option>
+                {% for podcast in podcasts %}
+                <option value="{{ podcast.0 }}" data-s-id="{{ podcast.1 }}">{{ podcast.0 }}</option>
+                {% endfor %}
+               </select>
+              </div>
+            </div>
+           </div>
+          </div>
+          {% endfor %}
+        </div>
       <!-- /.row -->
       <div class="row row-centered" style="margin-bottom:20px;">
         <div class="col-md-12 col-centered">
@@ -148,7 +176,10 @@
     <!-- Bootstrap core JavaScript -->
     <script src="../static/vendor/jquery/jquery.min.js"></script>
     <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Chosen select boxes -->
+    <script src="../static/vendor/chosen/chosen.jquery.min.js"></script>
+    <script src="../static/vendor/chosen/docsupport/init.js"></script>
+    <script src="../static/vendor/chosen/docsupport/prism.js"></script>
   </body>
 
 </html>
