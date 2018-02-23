@@ -43,6 +43,16 @@
                 }
             return check_parameters;
         };
+        get_favorites = function() {
+            let fave_parameters = {};
+            let favorites = document.getElementsByClassName("chosen-select-deselect");
+            let favorite = null;
+            for(let i = 0; i < favorites.length; i++) {
+                    favorite = favorites[i];
+                  //  favorites.
+            }
+
+        }
         submit = function() {
             parameters = get_selected_parameters()
             check_parameters = get_selected_checkboxes()
