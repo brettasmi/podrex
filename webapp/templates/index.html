@@ -99,6 +99,8 @@
                {% endfor %}
               </select>
              </div>
+             <div id="fave{{n}}-updated">
+             </div>
            </div>
           </div>
          </div>
@@ -136,7 +138,7 @@
     <!-- Footer -->
     <footer class="py-5 bg-dark">
       <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; Podrex 2018</p>
+        <p class="m-0 text-center text-white">Copyright &copy; Brett Smith 2018</p>
       </div>
       <!-- /.container -->
     </footer>
@@ -196,19 +198,52 @@
                  }
             });
         }
+        {% for i in range(4) %}
         $(function(){
-           $("#fave0").chosen().change(function () {
-               var pid = $('#fave0').val();
+           $("#fave{{i}}").chosen().change(function () {
+               var pid = $('#fave{{i}}').val();
                $.post({
                    url: "/dd-update/",
                    contentType: "application/json",
                    data: JSON.stringify({"podcast":pid}),
                    success: function(result){
-                       console.log(result);
+                       $("#fave{{i}}-updated").empty()
+                       if (result["action"] === "populate") {
+                       $("#fave{{i}}-updated").append(
+                            $("<a/>")
+                            .attr("href", "#")
+                               .append(
+                                   $("<img/>")
+                                    .attr("src", "http://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/"+result["podcast_art_id"]+".jpg")
+                                    .attr("style","margin-top:1rem;")
+                                    .addClass("card-img-top")
+                                    )
+                           );
+                       $("#fave{{i}}-updated").append(
+                           $("<div/>")
+                           .addClass("card-body")
+                           .append(
+                               $("<h4/>")
+                                .addClass("card-title text-center")
+                                .append(
+                                    $("<a/>")
+                                     .text(result["podcast_name"])
+                                )
+                           )
+                           .append(
+                               $("<p/>")
+                               .addClass("card-text")
+                               .text(result["podcast_description"])
+                           )
+                       );
+                       }
+                       else {
+                       }
                    }
                });
            });
        });
+       {% endfor %}
     </script>
   </body>
 

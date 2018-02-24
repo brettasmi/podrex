@@ -31,14 +31,21 @@ def dropdown_update():
     """
     user_input = request.json
     podcasts = []
-    podcasts.append(int(user_input["podcast"]))
-    podcast_info = db.get_podcast_info(conn, cursor, podcasts)[0]
-    print(podcast_info)
-    podcast_json = jsonify(podcast_name=podcast_info[1],
-                           podcast_art_id=podcast_info[0],
-                           podcast_description=podcast_info[3])
-    return podcast_json
-
+    try:
+        podcasts.append(int(user_input["podcast"]))
+        podcast_info = db.get_podcast_info(conn, cursor, podcasts)[0]
+        print(podcast_info)
+        podcast_json = jsonify(action="populate",
+                               podcast_name=podcast_info[1],
+                               podcast_art_id=podcast_info[0],
+                               podcast_description=podcast_info[3])
+        return podcast_json
+    except ValueError:
+        podcast_json = jsonify(action="destroy",
+                               podcast_name="",
+                               podcast_art_id="",
+                               podcast_description="")
+        return podcast_json
 @app.route("/predictions/", methods=["POST"])
 def predict():
     """
