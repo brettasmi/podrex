@@ -34,7 +34,7 @@ def dropdown_update():
     try:
         podcasts.append(int(user_input["podcast"]))
         podcast_info = db.get_podcast_info(conn, cursor, podcasts)[0]
-        print(podcast_info)
+        #print(podcast_info)
         podcast_json = jsonify(action="populate",
                                podcast_name=podcast_info[1],
                                podcast_art_id=podcast_info[0],
@@ -57,12 +57,12 @@ def predict():
     checkboxes = user_inputs["checkboxes"]
     favorites = user_inputs["favorites"]
     ratings, indices = [], []
-    print(parameters, checkboxes, favorites)
+    #print(parameters, checkboxes, favorites)
     for k, v in parameters.items():
         if v > 0:
             indices.append(int(k))
             ratings.append(int(v))
-    print(indices, ratings)
+    #print(indices, ratings)
     for k, v in checkboxes.items():
         if v:
             try:
@@ -81,7 +81,7 @@ def predict():
             except ValueError:
                 indices.append(int(k))
                 ratings.append(5)
-    print(indices, ratings)
+    #print(indices, ratings)
     predictions = model.fit_predict(ratings, indices)
     unique_id = db.set_unique_page(conn, cursor, predictions) # write func to make unique id
     return unique_id

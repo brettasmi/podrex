@@ -78,11 +78,11 @@ class PodcastRecommender:
         approx_d (numpy array): approximated d vector of length m representing
                                 predicted user ratings
         """
-        print(indices, ratings)
+        #print(indices, ratings)
         self.ratings_array = np.array(ratings)
         self.ratings_indices = np.array(indices)
         self.V = V
-        print(self.V.shape)
+        #print(self.V.shape)
         self.V_sub = self.V.T[:,self.ratings_indices]
         self.approx_u = np.linalg.lstsq(self.V_sub.T, self.ratings_array)
         self.approx_d = np.dot(self.approx_u[0], self.V.T)
@@ -95,7 +95,7 @@ class PodcastRecommender:
         for couplet in zip(ratings, indices):
             if couplet[0]==5:
                 bonus_nlp = 1-(pairwise_dist_2d[couplet[1],:]) * (1/bonus_level)
-                print(bonus_nlp)
+                #print(bonus_nlp)
                 self.bonused_d += bonus_nlp
 
     def fit_predict(self, ratings, indices, n_items=16):
