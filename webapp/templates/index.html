@@ -197,18 +197,19 @@
                  }
             });
         }
-        {% for i in range(4) %}
+        //{ for i in range(4) }
         $(function(){
-           $("#fave{{i}}").chosen().change(function () {
-               var pid = $('#fave{{i}}').val();
+           $(".chosen-select-deselect").chosen().change(function () {
+               let id = $(this).attr('id');
+               var pid = $("#" + id).val();
                $.post({
                    url: "/dd-update/",
                    contentType: "application/json",
                    data: JSON.stringify({"podcast":pid}),
                    success: function(result){
-                       $("#fave{{i}}-updated").empty()
+                       $("#" + id + "-updated").empty()
                        if (result["action"] === "populate") {
-                           $("#fave{{i}}-updated").append(
+                           $("#" + id + "-updated").append(
                                 $("<a/>")
                                 .attr("href", "#")
                                    .append(
@@ -218,7 +219,7 @@
                                         .addClass("card-img-top")
                                         )
                                );
-                           $("#fave{{i}}-updated").append(
+                           $("#" + id + "-updated").append(
                                $("<div/>")
                                .append(
                                    $("<p/>")
@@ -234,7 +235,7 @@
                });
            });
        });
-       {% endfor %}
+       //{ endfor }
        $(".chosen-select-deselect").chosen().change(function () {
 	          var id = $(this).attr('id');
 	          console.log(id);
