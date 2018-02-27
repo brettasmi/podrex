@@ -30,7 +30,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="#"></a>
+        <a class="navbar-brand" href="#">Podrex</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -65,11 +65,10 @@
        <div class="container">
         <div class="row">
             <div class="col-md-8">
-                <h1 class="display-4">Welcome to podrex!</h1>
-                  <p class="lead" style="margin-top:2rem;">We recommend podcasts based on podcasts you already like.</p>
-                  <p class="lead">First, choose some of your favorite podcasts.</p>
-                  <p class="lead">Next, if you don't have any favorite podcasts or you want to provide more information to the algoritm, rate some of the podcasts below. Rating even a single podcast should give you some interesting recommendations.</p>
-                  <p class="lead">Finally, press the "Get Recommendations" button at the bottom to get your recommendations.</p>
+                <p class="h4" style="margin-top:1rem;">Welcome to podrex: podcast recommendations based on shows you already like.</p>
+                <p class="lead"style="margin-top:1rem;"><strong>First</strong>, choose some of your favorite podcasts.</p>
+                <p class="lead"><strong>Next</strong>, if you don't have any favorite podcasts, rate some (even a single one) of the podcasts below.</p>
+                <p class="lead"><strong>Finally</strong>, press the "Get Recommendations" button at the bottom to get your recommendations.</p>
             </div>
             <div class="col-md-4">
                 <img style="width:100%" src="http://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/images/podrex.png" />
@@ -92,7 +91,7 @@
                <a>One of my favorite podcasts:</a>
              </h4>
              <div>
-              <select id="fave{{n}}" data-placeholder="Choose a podcast.." class="chosen-select-deselect" tabindex="2" style="width:100%">
+              <select id="fave{{n}}" data-placeholder="Choose a podcast.." class="chosen-select-deselect" tabindex="{{n}}" style="width:100%">
                <option value=""></option>
                {% for podcast in podcasts %}
                <option value="{{ podcast.1 }}">{{ podcast.0 }}</option>
@@ -221,10 +220,10 @@
                                );
                            $("#fave{{i}}-updated").append(
                                $("<div/>")
-                               .addClass("card-body")
                                .append(
                                    $("<p/>")
                                    .addClass("card-text")
+                                   .attr("style","margin-top:1rem;")
                                    .text(result["podcast_description"])
                                )
                            );
@@ -236,6 +235,15 @@
            });
        });
        {% endfor %}
+       $(".chosen-select-deselect").chosen().change(function () {
+	          var id = $(this).attr('id');
+	          console.log(id);
+       });
+       var div_counter = 1;
+       new_favorite_podcast = function() {
+           div_counter++
+           console.log(div_counter)
+       }
     </script>
   </body>
 
