@@ -194,13 +194,13 @@ def set_unique_page(conn, cursor, predictions):
             conn.rollback()
     conn.commit()
     return unique_id
-def get_podcast_info(conn, cursor, podcast_list):
+def get_podcast_info(conn, podcast_list):
     """
     Returns list of information about items in spark_pids
 
     Parameters
     ----------
-    conn, cursor: active psycopg2 objects
+    conn: active psycopg2 objects
     podcast_list (list): list of spark_pids for which to retrieve information
 
     Returns
@@ -208,6 +208,7 @@ def get_podcast_info(conn, cursor, podcast_list):
     podcast_data (list of lists): list of lists of [podcast_id,
         podcast_name, spark_pid, podcast_description]
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("select podcast_id, podcast_name, spark_pid, description, "
                        "itunes_url, stitcher_url, website_url "
@@ -215,12 +216,13 @@ def get_podcast_info(conn, cursor, podcast_list):
                        {"spark_pids":tuple(podcast_list)})
         podcasts_raw = cursor.fetchall()
         podcasts_data = [list(i) for i in podcasts_raw]
+        cursor.close()
         return podcasts_data
     except:
         logging.exception("failed to get podcast_info")
         conn.rollback()
-        return None
-
+    finally:
+        cursor.close()
 def get_prediction_info(conn, cursor, unique_id):
     """
     Returns list of information about items in spark_pids
@@ -244,5 +246,5 @@ def get_prediction_info(conn, cursor, unique_id):
         conn.rollback()
         return None
 
-    recommendation_data = get_podcast_info(conn, cursor, results)
+    recommendation_data = get_podcast_info(conn, results)
     return recommendation_data

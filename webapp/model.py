@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 bonuses = pd.read_pickle("bonuses.pickle")
 bonus_array = bonuses[["bonus_one", "bonus_two", "bonus_three",
-                       "bonus_four", "bonus_five", "bonus_six"]].values
+                       "bonus_four", "bonus_five", "bonus_six", "bonus_seven"]].values
 with open("V.pickle", "rb") as in_pickle:
     V = pickle.load(in_pickle)
 with open("pairwise_dist_nlp", "rb") as infile:
@@ -86,6 +86,7 @@ class PodcastRecommender:
         self.V_sub = self.V.T[:,self.ratings_indices]
         self.approx_u = np.linalg.lstsq(self.V_sub.T, self.ratings_array)
         self.approx_d = np.dot(self.approx_u[0], self.V.T)
+        #print(self.approx_d)
         if penalize == True:
             penalty = np.zeros(self.V.shape[0])
             penalty[self.ratings_indices] = self.ratings_array
@@ -115,7 +116,7 @@ class PodcastRecommender:
                                      corresponding items
         """
         self._calculate_d(ratings, indices, V)
-        self._add_bonus(bonus_array, 5)
+        self._add_bonus(bonus_array, 6)
         self._add_nlp(ratings, indices, pairwise_dist_2d, 1)
         raw_recommendations = self._get_recommendations(bonus=True,
                                                      n_items=n_items)
