@@ -1,7 +1,7 @@
 # podrex
 #### Podcast recommendations based on what you already like
 
-![](img/podrex_v3.png =250x250)
+<img src="img/podrex_v3.png"  width=250>
 
 Podrex uses a collaborative filtering approach and natural language processing (NLP) to return podcast recommendations based on user input. A user-friendly web interface asks users to input some of their favorite podcasts and to rate some other popular podcasts, the data is passed to the server where the model quickly approximates the user's rating vector for about two-thousand podcasts.
 
