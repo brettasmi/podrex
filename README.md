@@ -24,4 +24,4 @@ To estimate the user's approximate ratings vector, we use an ordinary least squa
 The matrix factorization model performs with ~1.00 star RMSE as determined through K-fold cross-validation. Highly rated user podcasts remain highly rated in the model, and many users have validated the results as meaningfully good.  
 
 #### Deployment
-podrex.io hosts a user-friendly, fast interface for rating podcasts and getting recommendations. We built the website with a `flask` and `postgresql` backend and and HTML, CSS, Javascript, and jQuery frontend. We built some of the visualizations using the javascript library `D3`.
+[podrex.io](podrex.io) hosts a user-friendly, fast interface for rating podcasts and getting recommendations. We built the website with a `flask` and `postgresql` backend and and HTML, CSS, Javascript, and jQuery frontend. We built some of the visualizations using the javascript library `D3`.
