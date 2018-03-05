@@ -22,8 +22,7 @@ def connect_db():
     """
     conn = psycopg2.connect("dbname={} user={} host={} port={} password={}"
                         .format(db_name, user, host, port, key))
-    cursor = conn.cursor()
-    return conn, cursor
+    return conn
 
 def update_podcasts(pm, conn, cursor):
     """
@@ -167,7 +166,7 @@ def make_unique_id():
 
     return unique_id
 
-def set_unique_page(conn, cursor, predictions):
+def set_unique_page(conn, predictions):
     """
     Inserts user prediction data into a database and assigns a unique_id to
     the user. Returns unique_id.
@@ -181,7 +180,7 @@ def set_unique_page(conn, cursor, predictions):
     -------
     unique_id (str): unique id for user
     """
-
+    cursor = conn.cursor()
     while True:
         unique_id = make_unique_id()
         try:
@@ -193,6 +192,7 @@ def set_unique_page(conn, cursor, predictions):
             logging.exception("failed to insert new user")
             conn.rollback()
     conn.commit()
+    cursor.close()
     return unique_id
 def get_podcast_info(conn, podcast_list):
     """
@@ -223,7 +223,7 @@ def get_podcast_info(conn, podcast_list):
         conn.rollback()
     finally:
         cursor.close()
-def get_prediction_info(conn, cursor, unique_id):
+def get_prediction_info(conn, unique_id):
     """
     Returns list of information about items in spark_pids
 
@@ -237,6 +237,7 @@ def get_prediction_info(conn, cursor, unique_id):
     recommendation_data (list of lists): list of lists of [podcast_id,
         pocast_name, spark_pid, podcast_description]
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("select predictions from user_data where user_id = (%s)",
                        [unique_id])
@@ -246,5 +247,6 @@ def get_prediction_info(conn, cursor, unique_id):
         conn.rollback()
         return None
 
+    cursor.close()
     recommendation_data = get_podcast_info(conn, results)
     return recommendation_data

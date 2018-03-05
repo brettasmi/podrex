@@ -1,13 +1,28 @@
+# imports
+import nlp
+import pickle
+
 import numpy as np
 import pandas as pd
-import pickle
+
+from sklearn.metrics.pairwise import pairwise_distances as skl_pdist
+
+# load pickles
 bonuses = pd.read_pickle("bonuses.pickle")
 bonus_array = bonuses[["bonus_one", "bonus_two", "bonus_three",
-                       "bonus_four", "bonus_five", "bonus_six", "bonus_seven"]].values
+                       "bonus_four", "bonus_five", "bonus_six",
+                       "bonus_seven"]].values
+
 with open("V.pickle", "rb") as in_pickle:
     V = pickle.load(in_pickle)
-with open("pairwise_dist_nlp", "rb") as infile:
-    pairwise_dist_2d = pickle.load(infile)
+with open("pairwise_dist_nlp", "rb") as in_pickle:
+    pairwise_dist_2d = pickle.load(in_pickle)
+with open("tfidf_model.pickle", "rb") as in_pickle:
+    tfidf_model = pickle.load(in_pickle)
+with open("word_matrix.pickle", "rb") as in_pickle:
+    word_matrix = pickle.load(in_pickle)
+
+regexes = [nlp.links_regex, nlp.punc_newline_regex, nlp.non_alphanumeric]
 
 class PodcastRecommender:
     def __init__(self):
@@ -122,3 +137,28 @@ class PodcastRecommender:
                                                      n_items=n_items)
         final_recommendations = [int(i) for i in raw_recommendations]
         return final_recommendations
+
+    def nlp_search(self, search_terms, nlp_model=tfidf_model,
+                   nlp_matrix=word_matrix, results=12):
+        """
+        Returns the top n results most closely related to search_terms
+
+        Parameters
+        ----------
+        nlp_model: natural language processing model with a transform method
+        nlp_matrix (numpy array): tokenized matrix of processed text to
+                                  search against
+        search_terms (str): space-separated search terms
+        results (int): number of recommendations to return
+
+        Returns
+        -------
+        recommendations (numpy array): array of indices of podcasts to recommend
+        """
+        clean_search = nlp.clean_nlp_text(search_terms, regexes)
+        search_vector = nlp_model.transform([clean_search])
+        search_distances = skl_pdist(nlp_matrix, search_vector,
+                                     metric="cosine").reshape(-1)
+        raw_nlp_recommendations = np.argsort(search_distances)[:results]
+        nlp_recommendations = [int(i) for i in raw_nlp_recommendations]
+        return nlp_recommendations

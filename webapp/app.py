@@ -2,7 +2,7 @@ import pandas as pd
 import podrex_db_utils as db
 import pickle
 from random import shuffle
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, g
 from model import PodcastRecommender
 
 app = Flask(__name__)
@@ -13,7 +13,11 @@ with open("to_rate_list.pkl", "rb") as in_pickle:
 with open("podcast_pid_list.pickle", "rb") as in_pickle:
     podcast_pid_list = pickle.load(in_pickle)
 
-conn, cursor = db.connect_db()
+def get_db():
+    conn = getattr(g, '_database', None)
+    if conn is None:
+        conn = g._database = db.connect_db()
+    return conn
 
 @app.route("/")
 def index():
@@ -32,6 +36,7 @@ def dropdown_update():
     user_input = request.json
     podcasts = []
     try:
+        conn = get_db()
         podcasts.append(int(user_input["podcast"]))
         podcast_info = db.get_podcast_info(conn, podcasts)[0]
         #print(podcast_info)
@@ -44,13 +49,14 @@ def dropdown_update():
                                podcast_art_id="",
                                podcast_description="")
         return podcast_json
-        
+
 @app.route("/predictions/", methods=["POST"])
 def predict():
     """
     Gets predictions from the model and returns html
     page and podcasts to render
     """
+    conn = get_db()
     user_inputs = request.json
     parameters = user_inputs["parameters"]
     checkboxes = user_inputs["checkboxes"]
@@ -82,7 +88,7 @@ def predict():
                 ratings.append(5)
     #print(indices, ratings)
     predictions = model.fit_predict(ratings, indices)
-    unique_id = db.set_unique_page(conn, cursor, predictions) # write func to make unique id
+    unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
     return unique_id
 
 
@@ -91,11 +97,19 @@ def show_predictions(unique_id):
     """
     Returns personalized recommendation page to the user.
     """
+    conn = get_db()
     try:
-        recommendations = db.get_prediction_info(conn, cursor, unique_id)
+        recommendations = db.get_prediction_info(conn, unique_id)
         return render_template("recommendations.html", cards=recommendations)
     except:
         return render_template("sorry.html")
+
+@app.teardown_appcontext
+def close_connection(exception):
+    conn = getattr(g, '_database', None)
+    if conn is not None:
+        conn.close()
+
 def main():
     app.run(host="0.0.0.0", threaded=True)
 

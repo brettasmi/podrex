@@ -1,3 +1,4 @@
+// partially from Matt Drury - https://github.com/madrury/madrury.github.io/blob/master/smoothers/js/parameter-ui.js
 get_selected_parameters = function() {
     let parameters = {};
     let sliders = document.getElementsByClassName("slider");
