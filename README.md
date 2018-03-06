@@ -18,6 +18,11 @@ We scraped ratings data, review data, and podcast data  from multiple major podc
 #### Modeling
 For the collaborative filtering model, we used NMF to estimate the user and item matrices using an alternating least squares approach as implemented in Apache Spark via `pyspark` on AWS EMR instances. We analyzed the text data with the `NLTK`, `scikit-learn`, and `scipy` libraries in Python. We used the `networkx` library in Python to analyze podcast listener networks and `matplotlib` to make the resulting plots.
 
+<p>
+    <img src="img/cbb.gif" alt="Comedy Bang Bang Listener Network">
+    <em>Comedy Bang Bang's two-depth listener network, i.e. all connections between Comedy Bang Bang's listeners who listen to (depth one) podcasts whose listeners listen to (depth two) podcasts. Nodes are relative in size to number of network connections and colored by popularity and overall rating.</em>
+</p>
+
 To estimate the user's approximate ratings vector, we use an ordinary least squares approach with a subset of the item features matrix based on user input. The model adds a language bonus to the resultant estimated rating vector to podcasts similar in show and episode descriptions. All podcasts receive a minor bonus based on popularity and overall rating. Using only simple linear algebra in `numpy`, the model rapidly returns recommendations to the user.
 
 #### Evaluation
