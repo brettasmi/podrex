@@ -112,10 +112,10 @@
               <h5 class="card-title text-center">
                 <a>{{ card.1 }}</a>
               </h5>
-              <button id="up-{{ card.2 }}" class="btn" type="button" style="display:inline; margin-left:4%; margin-right:4%; width:40.75%; margin-bottom:12%;">
+              <button id="up-{{ card.2 }}" data-s-id="{{ card.2 }}" data-t-type="up" class="btn btn-light thumbs thumbs-up" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">
                   <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png" style="width:100%;"/>
               </button>
-              <button id="down-{{ card.2 }}" class="btn" type="button" style="display:inline; margin-left:4%; margin-right:4%; width:40.75%; margin-bottom:12%;">
+              <button id="down-{{ card.2 }}" data-s-id="{{ card.2 }}" data-t-type="down" class="btn btn-light thumbs thumbs-down" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">
                   <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-down-small.png" style="width:100%;"/>
               </button>
               <!--Button trigger modal-->

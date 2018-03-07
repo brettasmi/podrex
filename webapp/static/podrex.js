@@ -29,6 +29,20 @@ get_favorites = function() {
         }
     return fave_parameters;
 };
+
+get_thumbs = function () {
+    let results = {};
+    let buttons = $(".active.thumbs")
+    for (let button of buttons) {
+        if ($(button).attr("data-t-type") === "up") {
+            results[$(button).attr("data-s-id")] = 5;
+        }
+        else {
+            results[$(button).attr("data-s-id")] = 1;
+        }
+    }
+    return results;
+};
 submit = function() {
     parameters = get_selected_parameters()
     check_parameters = get_selected_checkboxes()
@@ -45,10 +59,34 @@ submit = function() {
     });
 }
 
+thumbs_listener = function(){
+    $('.thumbs').on('click', function () {
+        let id = $(this).attr('id');
+        let pid = $("#" + id).attr('data-s-id');
+        let t_type = $("#" + id).attr('data-t-type');
+        let active = $("#" + id).attr('aria-pressed');
+        if (active === "false") {
+            if (t_type === "up") {
+                let other = "#down-" + pid
+                setTimeout(function() {
+                    $(other).removeClass('active').attr('aria-pressed', false);
+                }.bind(this), 10);
+            }
+            else {
+                let other = "#up-" + pid
+                setTimeout(function() {
+                    $(other).removeClass('active').attr('aria-pressed', false);
+                }.bind(this), 10);
+            }
+        }
+        else{}
+    });
+}
+
 chosen_listener = function(){
    $(".chosen-select-deselect").chosen().change(function () {
        let id = $(this).attr('id');
-       var pid = $("#" + id).val();
+       var pid = $("#" + id).get();
        $.post({
            url: "/dd-update/",
            contentType: "application/json",
@@ -167,3 +205,4 @@ populate_dropdown = function(id) {
 }
 
 chosen_listener()
+thumbs_listener()
