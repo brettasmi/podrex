@@ -111,7 +111,13 @@
             <div class="card-body">
               <h5 class="card-title text-center">
                 <a>{{ card.1 }}</a>
-            </h5>
+              </h5>
+              <button id="up-{{ card.2 }}" class="btn" type="button" style="display:inline; margin-left:4%; margin-right:4%; width:40.75%; margin-bottom:12%;">
+                  <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png" style="width:100%;"/>
+              </button>
+              <button id="down-{{ card.2 }}" class="btn" type="button" style="display:inline; margin-left:4%; margin-right:4%; width:40.75%; margin-bottom:12%;">
+                  <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-down-small.png" style="width:100%;"/>
+              </button>
               <!--Button trigger modal-->
                 <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#modal{{ card.2 }}">
                   See Description
@@ -137,10 +143,11 @@
                   </div>
                 </div>
               <!--end modal-->
+              <!--
               <input name="slider{{ card.2 }}" data-s-id="{{ card.2 }}" type="range" min="0" max="5" value="0" class="slider" />
               <output class="output" name="output_slider{{ card.2 }}" for="slider{{ card.2 }}"></output>
               <br>
-              <input type="checkbox" class="checkbox" name="not interested" data-s-id="{{ card.2 }}" value="0">  I'm not interested in podcasts like this</input>
+              <input type="checkbox" class="checkbox" name="not interested" data-s-id="{{ card.2 }}" value="0">  I'm not interested in podcasts like this</input>-->
             </div>
           </div>
         <!--</div>-->
