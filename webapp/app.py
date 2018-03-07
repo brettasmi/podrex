@@ -104,6 +104,24 @@ def show_predictions(unique_id):
     except:
         return render_template("sorry.html")
 
+@app.route("/text-search/", methods=["POST"])
+def text_search():
+    """
+    Returns recommendations based on a text-based search
+    """
+    search = request.json
+    conn = get_db()
+    model = PodcastRecommender()
+    results = model.nlp_search(search["search"])
+    recommendation_data = db.get_podcast_info(conn, results)
+    #artid, title, sid, description, itunes, stitcher, podcast website
+    cards = [{"art_id":result[0], "title":result[1], "sid":result[2],
+              "description":result[3], "itunes_url":result[4],
+              "stitcher_url":result[5], "podcast_url":result[6]}
+             for result in recommendation_data]
+    cards_json = jsonify(cards)
+    return cards_json
+
 @app.teardown_appcontext
 def close_connection(exception):
     conn = getattr(g, '_database', None)
