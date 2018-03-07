@@ -22,7 +22,6 @@
     <!--<link href="../static/vendor/chosen/docsupport/prism.css" rel="stylesheet">-->
 
 
-
   </head>
 
   <body>
@@ -104,23 +103,47 @@
          </div>
        </div>
        <!-- /.row -->
-      <div class="row">
+      <div class="card-columns" style="-webkit-column-count:5;-moz-column-count:5;column-count:5;">
           {% for card in cards %}
-        <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
-          <div class="card h-100">
+        <!--<div class="col-lg-2 col-md-4 col-sm-6 portfolio-item">-->
+          <div class="card display: inline-block">
             <a href="#"><img class="card-img-top" src="http://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/{{ card.0 }}.jpg" alt=""></a>
             <div class="card-body">
-              <h4 class="card-title text-center">
+              <h5 class="card-title text-center">
                 <a>{{ card.1 }}</a>
-              </h4>
-              <p class="card-text">{{ card.3 }}</p>
+            </h5>
+              <!--Button trigger modal-->
+                <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#modal{{ card.2 }}">
+                  See Description
+                </button>
+
+              <!--modal-->
+              <div class="modal fade" id="modal{{ card.2 }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="modal{{ card.2 }}-content">{{ card.1 }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p class="card-text">{{ card.3 }}</p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <!--end modal-->
               <input name="slider{{ card.2 }}" data-s-id="{{ card.2 }}" type="range" min="0" max="5" value="0" class="slider" />
               <output class="output" name="output_slider{{ card.2 }}" for="slider{{ card.2 }}"></output>
               <br>
               <input type="checkbox" class="checkbox" name="not interested" data-s-id="{{ card.2 }}" value="0">  I'm not interested in podcasts like this</input>
             </div>
           </div>
-        </div>
+        <!--</div>-->
         {% endfor %}
       </div>
 
