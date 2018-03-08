@@ -39,14 +39,15 @@ def dropdown_update():
         conn = get_db()
         podcasts.append(int(user_input["podcast"]))
         podcast_info = db.get_podcast_info(conn, podcasts)[0]
-        #print(podcast_info)
         podcast_json = jsonify(action="populate",
                                podcast_art_id=podcast_info[0],
+                               podcast_name=podcast_info[1],
                                podcast_description=podcast_info[3])
         return podcast_json
     except ValueError:
         podcast_json = jsonify(action="destroy",
                                podcast_art_id="",
+                               podcast_name="",
                                podcast_description="")
         return podcast_json
 
@@ -61,8 +62,13 @@ def predict():
     parameters = user_inputs["parameters"]
     checkboxes = user_inputs["checkboxes"]
     favorites = user_inputs["favorites"]
+    thumbs = user_inputs["thumbs"]
     ratings, indices = [], []
     #print(parameters, checkboxes, favorites)
+    for k, v in thumbs.items():
+        if v > 0:
+            indices.append(int(k))
+            ratings.append(int(v))
     for k, v in parameters.items():
         if v > 0:
             indices.append(int(k))
