@@ -23,10 +23,10 @@ For the collaborative filtering model, we used NMF to estimate the user and item
     <em>Comedy Bang Bang's two-depth listener network, i.e. all connections between Comedy Bang Bang's listeners who listen to (depth one) podcasts whose listeners listen to (depth two) podcasts. Nodes are relative in size to number of network connections and colored by popularity and overall rating.</em>
 </p>
 
-To estimate the user's approximate ratings vector, we use an ordinary least squares approach with a subset of the item features matrix based on user input. The model adds a language bonus to the resultant estimated rating vector to podcasts similar in show and episode descriptions. All podcasts receive a minor bonus based on popularity and overall rating. Using only simple linear algebra in `numpy`, the model rapidly returns recommendations to the user.
+To estimate the user's approximate ratings vector, we use an ordinary least squares approach with a subset of the item features matrix based on user input. The model adds a language bonus to the resultant estimated rating vector to podcasts similar in show and episode descriptions. All podcasts receive a minor bonus based on popularity and overall rating. Using only simple linear algebra in `numpy`, the model rapidly returns recommendations to the user. A search function on the recommendations page allows users to search the database using NLP. The model transforms the search text and returns the most closely related podcasts by cosine distance. 
 
 #### Evaluation
 The matrix factorization model performs with ~1.00 star RMSE as determined through K-fold cross-validation. Highly rated user podcasts remain highly rated in the model, and many users have validated the results as meaningfully good.  
 
 #### Deployment
-[podrex.io](podrex.io) hosts a user-friendly, fast interface for rating podcasts and getting recommendations. We built the website with a `flask` and `postgresql` backend and and HTML, CSS, Javascript, and jQuery frontend. We built some of the visualizations using the javascript library `D3`.
+[podrex.io](podrex.io) hosts a user-friendly, fast interface for rating podcasts and getting recommendations. We built the website with a `flask` and `postgresql` backend and and HTML, CSS, and Javascript frontend. We built some of the visualizations using the javascript library `D3`.
