@@ -82,7 +82,7 @@ submit = function(){
                                    .attr("href", card["podcast_url"])
                                    .append(
                                        $("<img/>")
-                                       .attr("style","width:31%; display:inline; padding:5%; margin-top:-1%;background-color:#006c7d;border-radius:10px")
+                                       .attr("style","width:30%; display:inline; padding:5%; margin-top:-1%;background-color:#006c7d;border-radius:10px")
                                        .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
                                    )
                                )
