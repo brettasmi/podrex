@@ -30,7 +30,26 @@
 
     <!-- Chosen dropdown boxes CSS -->
     <link href="../static/vendor/chosen/chosen.min.css" rel="stylesheet">
+    <style>
+        .row {
+            font-size: 1.15rem;
+        }
 
+        .two-col-layout {
+            padding-right: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .about-heading {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .table-legend {
+            width: 95%;
+            margin: auto;
+        }
+    </style>
 
 </head>
 
@@ -39,7 +58,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">Podrex</a>
+            <a class="navbar-brand" href="https://podrex.io">Podrex</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -50,8 +69,13 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
+                        <span class="sr-only">(current)</span>
                     </li>
-            <!--
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/brettasmi/podrex">GitHub</a>
+                    </li>
+
+                    <!--
             <li class="nav-item">
               <a class="nav-link" href="#">Podcast Directory</a>
             </li>
@@ -64,13 +88,416 @@
         </div>
     </nav>
     <!-- End Navigation -->
-
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10 text-center">
+                <h1 class="display-4 about-heading" style="border-bottom:1px black solid;">About Podrex</h1>
+            </div>
+            <div class="col-1"></div>
+        </div>
+        <!-- row -->
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-10">
+                <h3 class="text-center about-heading">What is Podrex?</h3>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    Podrex is a podcast recommendation service built with machine learning to return podcast recommendations based on user input. As podcast nerds ourselves we often for get asked for recommendations of shows to check out because the current ecosystem (Apple
+                    Podcasts, Stitcher, etc) don't do a great job of recommending new shows to listeners based on their existing preferences. Instead, users of other services are generally faced with a wall of context-less images of podcasts they've never
+                    seen.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    By using machine learning to find patterns in hundreds of thousands of podcasts ratings and reviews, we hope to provide a set of recommendations that changes with a user's evolving preferences. Podrex also hopes to become a source where podcast nerds
+                    can find fascinating visualizations that describe the relationships between podcasts. Finally, Podrex hopes to distill listener preferences and podcast similarities into easily interpretable summaries that podcast advertisers can use
+                    to more accurately place ads without dealing with network-attached gatekeepers.
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10 about-heading" style="border-bottom:1px black solid;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <h3 class="text-center about-heading">How does Podrex work?</h3>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    Podrex uses a collaborative filtering approach to find relationships between podcast ratings and users. This is a similar approach to how Netflix or Amazon recommends you movies or items. Further, Podrex uses term frequency-inverse document frequency
+                    (TF-IDF)-based natural language processing (NLP) on podcast descriptions, episode descriptions, and review content to find further similarities between podcasts.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <img class="two-col-layout" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/about.png" alt="Podrex about - how does it work?" style="width:100%;">
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10" style="border-bottom:1px black dotted; margin-top:2rem; margin-bottom:2rem;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5 align-middle">
+                <p class="two-col-layout">
+                    It's about to get mathy folks, you've been warned.
+                </p>
+                <p class="two-col-layout">
+                    First, given users ratings on some podcasts, we create a ratings matrix <code>R</code>. Note this matrix is mostly empty, that is to say that most users have not rated most podcasts. We would like to approximate a given user's rating
+                    for a podcast based on how other similar users rated that podcast.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <h5 class="two-col-layout text-center">Ratings Matrix <span class="font-italic">R</span></h5>
+                <table class="table font-italic text-center two-col-layout small">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">podcast<sub>1</sub></th>
+                            <th scope="col">podcast<sub>2</sub></th>
+                            <th scope="col">...</th>
+                            <th scope="col">podcast<sub>j</sub></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">user<sub>1</sub></th>
+                            <td>u<sub>1</sub>p<sub>1</sub></td>
+                            <td></td>
+                            <td>...</td>
+                            <td>u<sub>1</sub>p<sub>j</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">user<sub>2</sub></th>
+                            <td>u<sub>2</sub>p<sub>1</sub></td>
+                            <td>u<sub>2</sub>p<sub>2</sub></td>
+                            <td>...</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">...</th>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">user<sub>i</sub></th>
+                            <td>u<sub>i</sub>p<sub>1</sub></td>
+                            <td></td>
+                            <td>...</td>
+                            <td>u<sub>i</sub>p<sub>j</sub></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="two-col-layout small text-justify table-legend">
+                    <em>
+                                A representation of ratings matrix R where rows represent users and columns represent podcasts. Data represent a given user's rating for a given podcast. In practice this matrix is sparsely populated.
+                            </em>
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10" style="border-bottom:1px black dotted; margin-top:2rem; margin-bottom:2rem;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    Next, given a chosen number <code>K</code> latent features, <code>i</code> users and <code>j</code> podcasts we solve for matrices <code>U</code> of shape <code>[i, K]</code> and <code>P</code> of shape <code>[j, K]</code> such that
+                </p>
+                <p class="two-col-layout text-center"><code>U&sdot;P<sup>T</sup> &asymp; R</code></p>
+                <p class="two-col-layout">
+                    by using non-negative matrix factorization (NMF).
+                </p>
+                <p class="two-col-layout">
+                    We use an alternating least squares (ALS) approach in which we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>. Then, we hold <code>R</code> and <code>P</code> constant and solve for <code>U</code>. Again,
+                    we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>, and we repeat this process via gradient descent until we see no reduction in error. Finally, we take
+                </p>
+                <p class="two-col-layout text-center"><code>U&sdot;P<sup>T</sup> &asymp; R</code></p>
+                <p class="two-col-layout">
+                    to approximate all ratings for all users. The optimal number of <code>K</code> and the value of regularization parameter (used to ensure we don't overfit to our training data) are optimized through parameter grid search.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <h5 class="two-col-layout text-center">User Matrix <span class="font-italic">U</span></h5>
+                <table class="table font-italic text-center two-col-layout small">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">f<sub>1</sub></th>
+                            <th scope="col">f<sub>2</sub></th>
+                            <th scope="col">...</th>
+                            <th scope="col">f<sub>K</sub></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">user<sub>1</sub></th>
+                            <td>u<sub>1</sub>f<sub>1</sub></td>
+                            <td>u<sub>1</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>u<sub>1</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">...</th>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">user<sub>i</sub></th>
+                            <td>u<sub>i</sub>f<sub>1</sub></td>
+                            <td>u<sub>i</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>u<sub>i</sub>f<sub>K</sub></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="two-col-layout small text-justify table-legend" style="margin-bottom:2rem;">
+                    <em>
+                                Representation of ratings matrix U where rows represent users and columns represent latent features (f).
+                            </em>
+                </p>
+                <h5 class="two-col-layout text-center">Podcast Matrix <span class="font-italic">P</span></h5>
+                <table class="table font-italic text-center two-col-layout small">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">f<sub>1</sub></th>
+                            <th scope="col">f<sub>2</sub></th>
+                            <th scope="col">...</th>
+                            <th scope="col">f<sub>K</sub></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">podcast<sub>1</sub></th>
+                            <td>p<sub>1</sub>f<sub>1</sub></td>
+                            <td>p<sub>1</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>1</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">...</th>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">podcast<sub>i</sub></th>
+                            <td>p<sub>i</sub>f<sub>1</sub></td>
+                            <td>p<sub>i</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>i</sub>f<sub>K</sub></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="two-col-layout small text-justify table-legend">
+                    <em>
+                        Representation of ratings matrix P where rows represent podcasts and columns represent latent features (f).
+                    </em>
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10" style="border-bottom:1px black dotted; margin-top:2rem; margin-bottom:2rem;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    "But what about new users?" Good question. The method above is computationally expensive and time-consuming, so we can't re-solve for the <code>U</code> and <code>P</code> matrices for every visit to the site. In order to suggest ratings to new users, we approximate a user's
+                    rating vector <code>d</code> based on a subset of the podcast matrix <code>Q</code> relevant to the podcasts said user rates upon visiting the site. Then using an ordinary least squares approach, we solve for <code>u</code> to approximate the latent features for that new user. Finally, we take <code>u&sdot;P<sup>T</sup></code> to get approximate ratings for every podcast for the new user.
+                </p>
+                <h5 class="two-col-layout text-center">User Vector <span class="font-italic">d</span></h5>
+                <table class="table font-italic text-center two-col-layout small">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">45</th>
+                            <th scope="col">286</th>
+                            <th scope="col">520</th>
+                            <th scope="col">1532</th>
+                            <th scope="col">2010</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">rating</th>
+                            <td>5</td>
+                            <td>4</td>
+                            <td>5</td>
+                            <td>1</td>
+                            <td>5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="two-col-layout small text-justify table-legend" style="margin-bottom:2rem;">
+                    <em>
+                        Representation of user rating vector d that as user inputs into Podrex where the row represents a user's rating for the podcast indexed in the column.
+                    </em>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <h5 class="two-col-layout text-center">Podcast Matrix <span class="font-italic">P<sub>d</sub></span></h5>
+                <table class="table font-italic text-center two-col-layout small">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">f<sub>1</sub></th>
+                            <th scope="col">f<sub>2</sub></th>
+                            <th scope="col">...</th>
+                            <th scope="col">f<sub>K</sub></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">45</th>
+                            <td>p<sub>45</sub>f<sub>1</sub></td>
+                            <td>p<sub>45</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>45</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">286</th>
+                            <td>p<sub>286</sub>f<sub>1</sub></td>
+                            <td>p<sub>286</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>286</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">520</th>
+                            <td>p<sub>520</sub>f<sub>1</sub></td>
+                            <td>p<sub>520</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>520</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">1532</th>
+                            <td>p<sub>1532</sub>f<sub>1</sub></td>
+                            <td>p<sub>1532</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>1532</sub>f<sub>K</sub></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2010</th>
+                            <td>p<sub>2010</sub>f<sub>1</sub></td>
+                            <td>p<sub>2010</sub>f<sub>2</sub></td>
+                            <td>...</td>
+                            <td>p<sub>2010</sub>f<sub>K</sub></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="two-col-layout small text-justify table-legend">
+                    <em>
+                        Representation of ratings matrix P<sub>d</sub> where rows represent podcasts and columns represent latent features (f).
+                    </em>
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10" style="border-bottom:1px black dotted; margin-top:2rem; margin-bottom:2rem;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    "And you said something about NLP?" Yes, we use TF-IDF based NLP to find similarities in the text of all the podcast descriptions, episode descriptions, and reviews for a given podcast. In brief: we strip all text of urls, punctuation, dates, times, numbers,
+                    and other nusiance text; we remove common, not contextually-meaningful words, e.g. "the," "it," "podcast"; we convert the words to the base form, e.g. "learning" > "learn"; for each podcast we calculate the frequency of the words
+                    multiplied by the log of the overall count of podcasts in which a given word appears; finally we take the cosine distance between all vectors in the resulting matrix. We use these cosine distances to help recommend podcasts similar in description
+                    to those rated by the user.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    The last step before showing the user their recommendations is to give a small bonus to podcasts based on their overall rating and popularity. After all of that, we show the user the top ratings!
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10 about-heading" style="border-bottom:1px black solid;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-1"></div>
+            <div class="col-10">
+                <h3 class="text-center about-heading">What did you use to build Podrex?</h3>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    We mainly used Python to build Podrex. We retrieved ratings and text data using <code>requests</code> and <code>BeautifulSoup</code> and put them into a <code>postgresql</code> database with <code>psycopg2</code>. We built and grid searched the NMF collaborative filtering model in Apache Spark via <code>pyspark.ml</code> on AWS EMR instances. We built the NLP model with <code>scikit-learn</code> and <code>nltk</code> and calculated pairwise cosine distances with <code>scipy</code>. We derived NLP-based dendrograms with <code>scipy</code> and plotted them with <code>d3</code> and <code>matplotlib</code>. We completed network analysis in <code>networkx</code> and plotted the networks with <code>matplotlib</code>.
+                </p>
+            </div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    We built the website frontend with Bootstrap-based HTML and CSS, jquery, and JavaScript. We built the web backend in <code>Flask</code> with a <code>postgresql</code> database. We host the site and database on AWS EC2 instances running nginx. We make real-time predictions using only <code>numpy</code> in order to rapidly return results without interacting directly with model objects.
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10 about-heading" style="border-bottom:1px black solid;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-1"></div>
+            <div class="col-10">
+                <h3 class="text-center about-heading">I can't find my favorite podcast, where is it?!</h3>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <p class="text-center">
+                    We know of thousands more podcasts than we can currently include here. Unfortunately, we have to throw out podcasts that don't have enough users who listen to and have rated enough other podcasts to make meaningful inferences from their data. The overall model suffers and recommendations are worse when these sparsely-reviewed podcasts are included. More podcasts are on their way!
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10 about-heading" style="border-bottom:1px black solid;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-1"></div>
+            <div class="col-10">
+                <h3 class="text-center about-heading">Who's that cute dog?</h3>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <p class="two-col-layout">
+                    That cute dog is Rex! Podrex is a portmanteau of "podcast" and "recommendations," but it also happens to be a convenient homage to the late Rex, pictured with the logo here. Shoutout to Ben Malnor for the artwork, find him at <a href="http://bus.wtf">bus.wtf</a></p>
+                </p>
+            </div>
+            <div class="col-md-5">
+                <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/smaller-rex.png" alt="photo of rex the dog" class="two-col-layout" style="display:inline;width:49%;margin:auto;" />
+                <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/podrex.png" alt="podrex logo" class="two-col-layout" style="display:inline;width:49%;margin:auto;" />
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10 about-heading" style="border-bottom:1px black solid;"></div>
+            <div class="col-md-1"></div>
+            <div class="col-1"></div>
+            <div class="col-10">
+                <h3 class="text-center about-heading">Who built Podrex?</h3>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <p class="text-center">
+                We, I mean "I", the royal "we" - you know - the editorial. I am Brett Smith, a data scientist in Seattle, Washington. Find me on <a href="https://github.com/brettasmi/" alt="github">GitHub</a> and <a href="https://www.linkedin.com/in/brettasmi/" alt="linkedin">Linkedin</a>
+                </p>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- /.container -->
     <!-- Footer -->
     <footer class="py-5 bg-dark">
         <div class="container">
             <p class="m-0 text-center text-white">Copyright &copy; Brett Smith 2018</p>
         </div>
-        <!-- /.container -->
+
     </footer>
 
     <!-- Bootstrap core JavaScript -->

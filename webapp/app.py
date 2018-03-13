@@ -110,6 +110,10 @@ def show_predictions(unique_id):
     except:
         return render_template("sorry.html")
 
+@app.route("/about/")
+def about_page():
+    return render_template("about.html")
+
 @app.route("/text-search/", methods=["POST"])
 def text_search():
     """
