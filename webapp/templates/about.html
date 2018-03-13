@@ -108,7 +108,7 @@
             <div class="col-md-5">
                 <p class="two-col-layout">
                     Podrex is a podcast recommendation service built with machine learning to return podcast recommendations based on user input. As podcast nerds ourselves we often for get asked for recommendations of shows to check out because the current ecosystem (Apple
-                    Podcasts, Stitcher, etc) don't do a great job of recommending new shows to listeners based on their existing preferences. Instead, users of other services are generally faced with a wall of context-less images of podcasts they've never
+                    Podcasts, Stitcher, etc.) don't do a great job of recommending new shows to listeners based on their existing preferences. Instead, users of other services are generally faced with a wall of context-less images of podcasts they've never
                     seen.
                 </p>
             </div>
@@ -208,19 +208,19 @@
             <div class="col-md-1"></div>
             <div class="col-md-5">
                 <p class="two-col-layout">
-                    Next, given a chosen number <code>K</code> latent features, <code>i</code> users and <code>j</code> podcasts we solve for matrices <code>U</code> of shape <code>[i, K]</code> and <code>P</code> of shape <code>[j, K]</code> such that
+                    Next, we choose a number of <code>K</code> latent features, which simply put, are features that matematically describe some features about users and podcasts. Then given <code>i</code> users and <code>j</code> podcasts, we solve for matrices <code>U</code> of shape <code>[i, K]</code> and <code>P</code> of shape <code>[j, K]</code> such that
                 </p>
                 <p class="two-col-layout text-center"><code>U&sdot;P<sup>T</sup> &asymp; R</code></p>
                 <p class="two-col-layout">
                     by using non-negative matrix factorization (NMF).
                 </p>
                 <p class="two-col-layout">
-                    We use an alternating least squares (ALS) approach in which we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>. Then, we hold <code>R</code> and <code>P</code> constant and solve for <code>U</code>. Again,
-                    we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>, and we repeat this process via gradient descent until we see no reduction in error. Finally, we take
+                    We use an alternating least squares (ALS) approach to solve for <code>R</code>. ALS is a multi-step process in which we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>, then we hold <code>R</code> and <code>P</code> constant and solve for <code>U</code>. Again,
+                    we hold <code>R</code> and <code>U</code> constant and solve for <code>P</code>, and we repeat this alternating process until we see no reduction in error. Finally, we take
                 </p>
-                <p class="two-col-layout text-center"><code>U&sdot;P<sup>T</sup> &asymp; R</code></p>
+                <p class="two-col-layout text-center"><code>U&sdot;P<sup>T</sup> = R&#180;</code></p>
                 <p class="two-col-layout">
-                    to approximate all ratings for all users. The optimal number of <code>K</code> and the value of regularization parameter (used to ensure we don't overfit to our training data) are optimized through parameter grid search.
+                    which approximates the <code>R</code> matrix for all users. The optimal number of <code>K</code> and the value of the regularization parameter (used to ensure we don't overfit to our training data) are optimized through parameter grid search.
                 </p>
             </div>
             <div class="col-md-5">
@@ -313,8 +313,12 @@
             <div class="col-md-5">
                 <p class="two-col-layout">
                     "But what about new users?" Good question. The method above is computationally expensive and time-consuming, so we can't re-solve for the <code>U</code> and <code>P</code> matrices for every visit to the site. In order to suggest ratings
-                    to new users, we approximate a user's rating vector <code>d</code> based on a subset of the podcast matrix <code>P</code> relevant to the podcasts said user rates upon visiting the site. Then using an ordinary least squares approach,
-                    we solve for <code>u</code> to approximate the latent features for that new user. Finally, we take <code>u&sdot;P<sup>T</sup></code> to get approximate ratings for every podcast for the new user.
+                    to new users, we take the user's rating vector <code>d</code> that they submit and take a subset of the podcast matrix <code>P</code> relevant to the podcasts rated in <code>d</code>. Then using an ordinary least squares approach,
+                    we solve for <code>u</code> to approximate the latent features for that new user. Finally, we take
+                </p>
+                <p class="text-center"><code>u&sdot;P<sup>T</sup> = d&#180;</code></p>
+                <p class="two-col-layout">
+                    to get approximate ratings for every podcast for the new user.
                 </p>
                 <h5 class="two-col-layout text-center">User Vector <span class="font-italic">d</span></h5>
                 <table class="table font-italic text-center two-col-layout small">
@@ -419,7 +423,7 @@
                     The last step before showing the user their recommendations is to give a small bonus to podcasts based on their overall rating and popularity. After all of that, we show the user the top ratings! We generate a unique URL for each user so they can return to the site later to see their recommendations again.
                 </p>
                 <p class="two-col-layout">
-                    After giving users recommendations, they can search perform a topic search using the NLP corpus. We transform the search and compare it to the entire TF-IDF matrix for every podcast, and we return the most closely related podcasts to the user. 
+                    After giving users recommendations, they can search perform a topic search using the NLP corpus. We transform the search and compare it to the entire TF-IDF matrix for every podcast, and we return the most closely related podcasts to the user.
                 </p>
             </div>
             <div class="col-md-1"></div>
