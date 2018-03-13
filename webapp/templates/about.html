@@ -312,8 +312,9 @@
             <div class="col-md-1"></div>
             <div class="col-md-5">
                 <p class="two-col-layout">
-                    "But what about new users?" Good question. The method above is computationally expensive and time-consuming, so we can't re-solve for the <code>U</code> and <code>P</code> matrices for every visit to the site. In order to suggest ratings to new users, we approximate a user's
-                    rating vector <code>d</code> based on a subset of the podcast matrix <code>Q</code> relevant to the podcasts said user rates upon visiting the site. Then using an ordinary least squares approach, we solve for <code>u</code> to approximate the latent features for that new user. Finally, we take <code>u&sdot;P<sup>T</sup></code> to get approximate ratings for every podcast for the new user.
+                    "But what about new users?" Good question. The method above is computationally expensive and time-consuming, so we can't re-solve for the <code>U</code> and <code>P</code> matrices for every visit to the site. In order to suggest ratings
+                    to new users, we approximate a user's rating vector <code>d</code> based on a subset of the podcast matrix <code>P</code> relevant to the podcasts said user rates upon visiting the site. Then using an ordinary least squares approach,
+                    we solve for <code>u</code> to approximate the latent features for that new user. Finally, we take <code>u&sdot;P<sup>T</sup></code> to get approximate ratings for every podcast for the new user.
                 </p>
                 <h5 class="two-col-layout text-center">User Vector <span class="font-italic">d</span></h5>
                 <table class="table font-italic text-center two-col-layout small">
@@ -408,14 +409,17 @@
             <div class="col-md-5">
                 <p class="two-col-layout">
                     "And you said something about NLP?" Yes, we use TF-IDF based NLP to find similarities in the text of all the podcast descriptions, episode descriptions, and reviews for a given podcast. In brief: we strip all text of urls, punctuation, dates, times, numbers,
-                    and other nusiance text; we remove common, not contextually-meaningful words, e.g. "the," "it," "podcast"; we convert the words to the base form, e.g. "learning" > "learn"; for each podcast we calculate the frequency of the words
-                    multiplied by the log of the overall count of podcasts in which a given word appears; finally we take the cosine distance between all vectors in the resulting matrix. We use these cosine distances to help recommend podcasts similar in description
+                    and other nusiance text; we remove common, not contextually-meaningful words, e.g. "the," "it," "podcast"; we convert the words to the base form, e.g. "learning" > "learn"; for each podcast we calculate the frequency of the words multiplied
+                    by the log of the overall count of podcasts in which a given word appears; finally we take the cosine distance between all vectors in the resulting matrix. We use these cosine distances to help recommend podcasts similar in description
                     to those rated by the user.
                 </p>
             </div>
             <div class="col-md-5">
                 <p class="two-col-layout">
-                    The last step before showing the user their recommendations is to give a small bonus to podcasts based on their overall rating and popularity. After all of that, we show the user the top ratings!
+                    The last step before showing the user their recommendations is to give a small bonus to podcasts based on their overall rating and popularity. After all of that, we show the user the top ratings! We generate a unique URL for each user so they can return to the site later to see their recommendations again.
+                </p>
+                <p class="two-col-layout">
+                    After giving users recommendations, they can search perform a topic search using the NLP corpus. We transform the search and compare it to the entire TF-IDF matrix for every podcast, and we return the most closely related podcasts to the user. 
                 </p>
             </div>
             <div class="col-md-1"></div>
@@ -430,12 +434,15 @@
             <div class="col-md-1"></div>
             <div class="col-md-5">
                 <p class="two-col-layout">
-                    We mainly used Python to build Podrex. We retrieved ratings and text data using <code>requests</code> and <code>BeautifulSoup</code> and put them into a <code>postgresql</code> database with <code>psycopg2</code>. We built and grid searched the NMF collaborative filtering model in Apache Spark via <code>pyspark.ml</code> on AWS EMR instances. We built the NLP model with <code>scikit-learn</code> and <code>nltk</code> and calculated pairwise cosine distances with <code>scipy</code>. We derived NLP-based dendrograms with <code>scipy</code> and plotted them with <code>d3</code> and <code>matplotlib</code>. We completed network analysis in <code>networkx</code> and plotted the networks with <code>matplotlib</code>.
+                    We mainly used Python to build Podrex. We retrieved ratings and text data using <code>requests</code> and <code>BeautifulSoup</code> and put them into a <code>postgresql</code> database with <code>psycopg2</code>. We built and grid
+                    searched the NMF collaborative filtering model in Apache Spark via <code>pyspark.ml</code> on AWS EMR instances. We built the NLP model with <code>scikit-learn</code> and <code>nltk</code> and calculated pairwise cosine distances with
+                    <code>scipy</code>. We derived NLP-based dendrograms with <code>scipy</code> and plotted them with <code>d3</code> and <code>matplotlib</code>. We completed network analysis in <code>networkx</code> and plotted the networks with <code>matplotlib</code>.
                 </p>
             </div>
             <div class="col-md-5">
                 <p class="two-col-layout">
-                    We built the website frontend with Bootstrap-based HTML and CSS, jquery, and JavaScript. We built the web backend in <code>Flask</code> with a <code>postgresql</code> database. We host the site and database on AWS EC2 instances running nginx. We make real-time predictions using only <code>numpy</code> in order to rapidly return results without interacting directly with model objects.
+                    We built the website frontend with Bootstrap-based HTML and CSS, jquery, and JavaScript. We built the web backend in <code>Flask</code> with a <code>postgresql</code> database. We host the site and database on AWS EC2 instances running
+                    nginx. We make real-time predictions using only <code>numpy</code> in order to rapidly return results without interacting directly with model objects.
                 </p>
             </div>
             <div class="col-md-1"></div>
@@ -450,7 +457,8 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <p class="text-center">
-                    We know of thousands more podcasts than we can currently include here. Unfortunately, we have to throw out podcasts that don't have enough users who listen to and have rated enough other podcasts to make meaningful inferences from their data. The overall model suffers and recommendations are worse when these sparsely-reviewed podcasts are included. More podcasts are on their way!
+                    We know of thousands more podcasts than we can currently include here. Unfortunately, we have to throw out podcasts that don't have enough users who listen to and have rated enough other podcasts to make meaningful inferences from their data. The overall
+                    model suffers and recommendations are worse when these sparsely-reviewed podcasts are included. More podcasts are on their way!
                 </p>
             </div>
             <div class="col-md-1"></div>
@@ -484,7 +492,8 @@
             <div class="col-md-1"></div>
             <div class="col-md-10">
                 <p class="text-center">
-                We, I mean "I", the royal "we" - you know - the editorial. I am Brett Smith, a data scientist in Seattle, Washington. Find me on <a href="https://github.com/brettasmi/" alt="github">GitHub</a> and <a href="https://www.linkedin.com/in/brettasmi/" alt="linkedin">Linkedin</a>
+                    We, I mean "I", the royal "we" - you know - the editorial. I am Brett Smith, a data scientist in Seattle, Washington. Find me on <a href="https://github.com/brettasmi/" alt="github">GitHub</a> and <a href="https://www.linkedin.com/in/brettasmi/"
+                        alt="linkedin">Linkedin</a>
                 </p>
             </div>
             <div class="col-md-1"></div>
