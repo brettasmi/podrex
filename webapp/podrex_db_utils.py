@@ -11,32 +11,31 @@ port = os.environ["RDS_PORT"]
 
 def connect_db():
     """
-    Returns connection and cursor to AWS RDS set up for this purpose.
+    Returns connection to AWS RDS set up for this purpose.
 
     Parameters
     None
 
     Returns
     conn: psycopg2 connection object
-    cursor: psycopg2 cursor object
     """
     conn = psycopg2.connect("dbname={} user={} host={} port={} password={}"
                         .format(db_name, user, host, port, key))
     return conn
 
-def update_podcasts(pm, conn, cursor):
+def update_podcasts(pm, conn):
     """
     Updates podcast metadata table and returns bool of success or failure
 
     Parameters
     pm: result_dictionary with podcast metadata, from module
     scrape_itunes
-
-    cursor: psycopg2 active cursor
+    conn: active psycopg2 connection object
 
     Returns
     True on success, False on failure
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("UPDATE podcasts "
                "SET podcast_id = (%s), artist_id = (%s), artist_name = (%s), "
@@ -53,13 +52,15 @@ def update_podcasts(pm, conn, cursor):
                pm["also_consumed"], pm["more_by_artist"], pm["top_in_genre"],
                pm["itunes_url"]))
         conn.commit()
+        cursor.close()
         return True
     except:
         logging.exception("failed inside update_podcasts")
-        conn.rollback() # fix cursor
+        cursor.close()
+        conn.rollback() # fix connection
         return False
 
-def update_reviews(review, conn, cursor):
+def update_reviews(review, conn):
     """
     Updates the podcast reviews table and returns bool on success or failure
 
@@ -67,12 +68,11 @@ def update_reviews(review, conn, cursor):
     review: a single dictionary of review metadata returned from parsing
     function in scrape_itunes module
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
 
     Returns
     True on success, False on failure
     """
-
+    cursor = conn.cursor()
     try:
         cursor.execute("INSERT INTO reviews "
                        "(podcast_id, username, user_id, review_id, rating, "
@@ -86,24 +86,26 @@ def update_reviews(review, conn, cursor):
                         review["customer_type"], review["date"],
                         review["data_source"]))
         conn.commit()
+        cursor.close()
         return True
     except:
-        conn.rollback() # fix cursor
+        cursor.close()
+        conn.rollback() # fix connection
         logging.exception("failed inside update_reviews")
         return False
 
-def update_episodes(episode, conn, cursor):
+def update_episodes(episode, conn):
     """
     Updates the episodes table in the podcast db and returns bool on success
 
     Parameters
     episode (dict): a dictionary of a single episode metadata
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
 
     Returns
     True on success, False on failure
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("INSERT INTO episodes "
                        "(podcast_id, episode_id, description, name, "
@@ -114,24 +116,27 @@ def update_episodes(episode, conn, cursor):
                         episode["download_url"], episode["release_date"],
                         episode["popularity"]))
         conn.commit()
+        cursor.close()
         return True
     except:
-        conn.rollback() # fix cursor
+        cursor.close()
+        conn.rollback() # fix connection
         logging.exception("failed inside update_episodes")
         return False
 
-def get_unprocessed_podcast(cursor, mark_in_progress=False):
+def get_unprocessed_podcast(conn, mark_in_progress=False):
     """
     Returns podcast name and url of a single unprocessed podcast
     based on column processed in table podcasts
 
     Parameters
-    cursor: active psycopg2 cursor object
+    conn: active psycopg2 connection object
 
     Returns
     podcast_name (string) name of returned podcast
     itunes_url (string) url of returned podcast to scrape
     """
+    cursor = conn.cursor()
     cursor.execute("SELECT podcast_name, itunes_url "
                    "FROM podcasts WHERE processed = 'false' "
                    "LIMIT 1")
@@ -141,21 +146,24 @@ def get_unprocessed_podcast(cursor, mark_in_progress=False):
         cursor.execute("UPDATE podcasts "
                        "SET processed = 'in_progress' "
                        "WHERE itunes_url = %s ", [itunes_url])
+    conn.commit()
+    cursor.close()
     return podcast_name, itunes_url
 
-def mark_as_itunes(conn, cursor, podcast_url):
+def mark_as_itunes(conn, podcast_url):
     """
     Marks a podcast as processed through itunes in the database
 
     Parameters
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
     podcast_url (str): podcast url to match for updating
     """
+    cursor = conn.cursor()
     cursor.execute("UPDATE podcasts "
                    "SET processed = 'itunes' "
                    "WHERE itunes_url = (%s)", [podcast_url])
     conn.commit()
+    cursor.close()
 
 def make_unique_id():
     """
@@ -173,7 +181,7 @@ def set_unique_page(conn, predictions):
 
     Parameters
     ----------
-    conn, cursor: active psycopg2 objects
+    conn: active psycopg2 connection object
     predictions: list user prediction data
 
     Returns
@@ -194,13 +202,14 @@ def set_unique_page(conn, predictions):
     conn.commit()
     cursor.close()
     return unique_id
+
 def get_podcast_info(conn, podcast_list):
     """
     Returns list of information about items in spark_pids
 
     Parameters
     ----------
-    conn: active psycopg2 objects
+    conn: active psycopg2 connection object
     podcast_list (list): list of spark_pids for which to retrieve information
 
     Returns
@@ -223,13 +232,14 @@ def get_podcast_info(conn, podcast_list):
         conn.rollback()
     finally:
         cursor.close()
+
 def get_prediction_info(conn, unique_id):
     """
     Returns list of information about items in spark_pids
 
     Parameters
     ----------
-    conn, cursor: active psycopg2 objects
+    conn: active psycopg2 connection object
     unique_id (str): unique alphanumeric id given to a set of predictions
 
     Returns
@@ -244,6 +254,7 @@ def get_prediction_info(conn, unique_id):
         results = cursor.fetchone()[0]
     except:
         logging.exception("failed to get unique_user_id")
+        cursor.close()
         conn.rollback()
         return None
 

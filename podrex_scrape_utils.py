@@ -9,11 +9,11 @@ import string
 import time
 
 import pandas as pd
-import podrex_db_utils as db
 
 from bs4 import BeautifulSoup
 from collections import defaultdict
 from scipy.stats import exponnorm
+from webapp import podrex_db_utils as db
 
 headers = {}
 headers["User-Agent"] = os.environ["SCRAPE_HEADERS"]
@@ -221,16 +221,15 @@ def process_podcast():
     Returns
     None
     """
-    conn, cursor = db.connect_db()
-    podcast_name, podcast_url = db.get_unprocessed_podcast(cursor,
+    conn = db.connect_db()
+    podcast_name, podcast_url = db.get_unprocessed_podcast(conn,
                                                            mark_in_progress=True)
-    conn.commit() # commit set to in progress
     podcast_id = get_podcast_id(podcast_url)
     with open("scrape.log", "a") as log_file:
         podcast_dict, podcast_data, page_data = process_metadata(podcast_name,
                                                                  podcast_url,
                                                                  podcast_id,
-                                                                 conn, cursor,
+                                                                 conn,
                                                                  log_file)
         if podcast_data == False or podcast_dict == False or page_data == False:
             time.sleep(exponnorm.rvs(24, loc=200, scale=1, size=1))
@@ -239,16 +238,16 @@ def process_podcast():
             return None
         total_reviews = podcast_dict["review_count"]
         time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
-        process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_file)
-        process_episodes(podcast_data, page_data, podcast_id, conn, cursor, log_file)
+        process_reviews(podcast_id, podcast_name, total_reviews, conn, log_file)
+        process_episodes(podcast_data, page_data, podcast_id, conn, log_file)
         log_file.write("{} | success on {}\n".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                                   time.localtime()), podcast_name))
         print("{} | success on {}".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                             time.localtime()), podcast_name))
         time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
-    db.mark_as_itunes(conn, cursor, podcast_url)
+    db.mark_as_itunes(conn, podcast_url)
 
-def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
+def process_metadata(podcast_name, podcast_url, podcast_id, conn,
                      log_file):
     """
     Wrapper function to process metadata of a podcast
@@ -258,7 +257,6 @@ def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
     podcast_url (str): itunes url from database
     podcast_id (int): unique podcast identifier
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
     log_file (file object in writeable mode): log file to write errors
 
     Returns
@@ -289,13 +287,13 @@ def process_metadata(podcast_name, podcast_url, podcast_id, conn, cursor,
         fail_handler(podcast_name, "parse first page", log_file)
         return False, False, False
     # update podcast metadata database
-    db_update_success = db.update_podcasts(podcast_dict, conn, cursor)
+    db_update_success = db.update_podcasts(podcast_dict, conn)
     if not db_update_success:
         fail_handler(podcast_name, "update podcast db", log_file)
         return False, False, False
     return podcast_dict, podcast_data, page_data
 
-def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_file):
+def process_reviews(podcast_id, podcast_name, total_reviews, conn, log_file):
     """
     Wrapper function to process reviews of a podcast
 
@@ -303,7 +301,6 @@ def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_f
     podcast_id (int): unique podcast identifier
     total_reviews (int): total number of reviews
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
     log_file (file object in writeable mode): log file to write errors
     max_episodes (int): max number episodes to add to the database
 
@@ -329,14 +326,14 @@ def process_reviews(podcast_id, podcast_name, total_reviews, conn, cursor, log_f
 
         for review in reviews:
             review_dict = parse_review(review, podcast_id)
-            db.update_reviews(review_dict, conn, cursor)
+            db.update_reviews(review_dict, conn)
         print("Success on page {} of {} on {}".format(current_page, num_pages,
                                                       podcast_name))
         current_page += 1
         if current_index < total_reviews:
             time.sleep(exponnorm.rvs(2, loc=22, scale=1, size=1))
 
-def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
+def process_episodes(podcast_data, page_data, podcast_id, conn,
                      log_file, max_episodes=50):
     """
     Wrapper function to process episodes of a podcast
@@ -346,7 +343,6 @@ def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
     page_data (dict): dictionary of more podcast data from itunes
     podcast_id (int): unique podcast identifier
     conn: active psycopg2 connection
-    cursor: active psycopg2 cursor
     log_file (file object in writeable mode): log file to write errors
     max_episodes (int): max number episodes to add to the database
 
@@ -369,7 +365,7 @@ def process_episodes(podcast_data, page_data, podcast_id, conn, cursor,
     for episode in episode_list:
         parsed_episode = parse_episode(episode_data[episode], episode,
                                        podcast_id, popularity_map)
-        db.update_episodes(parsed_episode, conn, cursor)
+        db.update_episodes(parsed_episode, conn)
 
 def review_url_constructor(podcast_id, current_index, total_reviews):
     """
