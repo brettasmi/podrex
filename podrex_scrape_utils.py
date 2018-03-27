@@ -54,21 +54,21 @@ def request(url, podcast_name, headers, f):
         elif response.status_code == 403:
             time.sleep(exponnorm.rvs(20, loc=220, scale=1, size=1))
             tries += 1
-        elif r.status_code == 400:
+        elif response.status_code == 400:
             page_index += 500
             print("Something went wrong with {}!! "
                   "(Error Code 400)".format(podcast_name))
             f.write("{}\n{}\n{}\n".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                                       time.localtime()),
-                                                      podcast_name, r.text))
+                                                      podcast_name, response.text))
             break
             return None, False
         else:
             print("Something went wrong with {}!!".format(podcast_name))
             f.write("{}\n{}\n{}\n{}\n".format(time.strftime("%Y-%m-%d %H:%M:%S",
                                                       time.localtime()),
-                                        podcast_name, r.status_code,
-                                        r.text))
+                                        podcast_name, response.status_code,
+                                        response.text))
             break
             return None, False
     return None, False
