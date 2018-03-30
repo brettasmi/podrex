@@ -5,7 +5,7 @@ import string
 import logging
 import time
 
-import podrex_db_utils as db
+from webapp import podrex_db_utils as db
 
 from bs4 import BeautifulSoup
 from scipy.stats import exponnorm
@@ -13,17 +13,18 @@ from scipy.stats import exponnorm
 punc_regex = re.compile('[%s]' % re.escape(string.punctuation))
 headers = {"User-Agent":user_agent.generate_user_agent(os=None,
            navigator=None, platform=None, device_type="desktop")}
-def get_podcast_name(conn, cursor):
+def get_podcast_name(conn):
     """
     Gets the name of a podcast from the database
 
     Parameters
-    conn, cursor: active psycopg2 connection and cursor objects
+    conn: active psycopg2 connection
 
     Returns
     podcast_name (str): podcast name
     itunes_url (str): itunes_url for matching later
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("SELECT podcast_name, itunes_url "
                        "FROM stitcher "
@@ -32,11 +33,13 @@ def get_podcast_name(conn, cursor):
         result = cursor.fetchone()
         podcast_name = punc_regex.sub("", result[0])
         itunes_url = result[1]
+        cursor.close()
         return podcast_name, itunes_url
 
     except:
         logging.exception("failed to get name")
         conn.rollback()
+        cursor.close()
 
 def google_url_constructor(podcast_name):
     """
@@ -91,12 +94,12 @@ def parse_google_result(google_result):
         else:
             logging.exception("failed to find top google result in parsing")
             return None, None, False
-def update_db(conn, cursor, itunes_url, search_url, search_name):
+def update_db(conn, itunes_url, search_url, search_name):
     """
     Updates a row in the db with stitcher url and name
 
     Parameters
-    conn, cursor: active psycopg2 objects
+    conn: active psycopg2 connection
     itunes_url (str): itunes_url on which to match db row
     stitcher_url (str): parsed stitcher url
     stitcher_name (str): parsed stitcher name
@@ -104,40 +107,47 @@ def update_db(conn, cursor, itunes_url, search_url, search_name):
     Returns
     True on success, False on failure
     """
+    cursor = conn.cursor()
     try:
         cursor.execute("UPDATE stitcher SET search_name = (%s), "
                        "stitcher_url = (%s) "
                        "WHERE itunes_url = (%s)",
                        [search_name, search_url, itunes_url])
         conn.commit()
+        cursor.close()
         return True
     except:
         conn.rollback()
         logging.exception("failed to update db on {}".format(itunes_url))
+        cursor.close()
         return False
 
-def process_podcast(conn, cursor, log_file):
+def process_podcast(conn, log_file):
     """
     Wrapper function to process a podcast
 
     Parameters
-    conn, cursor: active psycopg2 objects
+    conn: active psycopg2 connection
     log_file (writeable file object): log file to write errors
     Returns
     None
     """
-    podcast_name, itunes_url = get_podcast_name(conn, cursor)
+    cursor = conn.cursor()
+    podcast_name, itunes_url = get_podcast_name(conn)
     google_url = google_url_constructor(podcast_name)
     google_result = google_request(google_url, headers)
     if google_result.status_code == 503:
         print("YOU'VE BEEN DISCOVERED!!!!")
+        cursor.close()
         time.sleep(3600)
+        return None
     elif google_result.status_code != 200:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}\n".format(podcast_name))
         cursor.execute("update stitcher set stitcher_url = 'problem' "
                        "where itunes_url = (%s)", [itunes_url])
         time.sleep(exponnorm.rvs(2, 45, 1, 1))
+        cursor.close()
         return None
     search_url, search_name, parse_success = parse_google_result(google_result)
     if not parse_success:
@@ -148,6 +158,7 @@ def process_podcast(conn, cursor, log_file):
                            "stitcher_url = 'no result' "
                            "WHERE itunes_url = (%s)", [itunes_url])
             conn.commit()
+            cursor.close()
             time.sleep(exponnorm.rvs(2, 45, 1, 1))
             return None
         else:
@@ -157,19 +168,22 @@ def process_podcast(conn, cursor, log_file):
             cursor.execute("update stitcher set stitcher_url = 'problem' "
                            "where itunes_url = (%s)", [itunes_url])
             conn.commit()
+            cursor.close()
             time.sleep(exponnorm.rvs(2, 45, 1, 1))
             return None
-    success = update_db(conn, cursor, itunes_url, search_url, search_name)
+    success = update_db(conn, itunes_url, search_url, search_name)
     if success:
         print("success on {}".format(podcast_name))
         log_file.write("success on {}".format(podcast_name))
+        cursor.close()
         time.sleep(exponnorm.rvs(2, 45, 1, 1))
     else:
         print("failure on {}".format(podcast_name))
         log_file.write("failure on {}".format(podcast_name))
+        cursor.close()
         time.sleep(exponnorm.rvs(2, 45, 1, 1))
 if __name__ == "__main__":
-    conn, cursor = db.connect_db()
+    conn = db.connect_db()
     while True:
         with open ("stitcher_log.log", "a") as log_file:
-            process_podcast(conn, cursor, log_file)
+            process_podcast(conn, log_file)
