@@ -1,0 +1,32 @@
+.links-box {
+    text-align: center;
+    width:100%;
+}
+.podcast-link {
+    display: inline-block;
+    width:30%;
+}
+.link-image {
+    padding-bottom:2.5%;
+    margin-right:2.75%
+}
+.link-icon {
+    padding:5%;
+    margin-top:-1%;
+    background-color:#006c7d;
+    border-radius:10px;
+}
+.search-button{
+    display:inline;
+    margin:auto;
+    width:15%;
+    height:90%;
+}
+.full-width {
+    width:100%;
+}
+.thumb-card {
+    border-bottom:solid 1px black;
+    margin-bottom:0.25rem;
+    padding-bottom:0.75rem;
+}
