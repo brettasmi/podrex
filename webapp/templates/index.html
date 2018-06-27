@@ -31,7 +31,8 @@
     <!-- Chosen dropdown boxes CSS -->
     <link href="../static/vendor/chosen/chosen.min.css" rel="stylesheet">
 
-
+    <!-- podrex CSS -->
+    <link href="../static/css/podrex.css" rel="stylesheet">
 </head>
 
 <body>
@@ -78,7 +79,7 @@
                             <p class="lead" style="margin-top:1rem;"><strong>Input some of your favorite podcasts and/or rate some of the podcasts below. Then scroll down to get recommendations.</strong> </p>
                     </div>
                     <div class="col-md-3">
-                        <img style="width:100%" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/podrex.png" />
+                        <img class="full-width" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/podrex.png" />
                     </div>
                 </div>
             </div>
@@ -94,7 +95,7 @@
                             <a>One of my favorite podcasts:</a>
                         </h5>
                         <div>
-                            <select id="fave0" data-placeholder="Choose a podcast.." class="chosen-select-deselect" tabindex="2" style="width:100%">
+                            <select id="fave0" data-placeholder="Choose a podcast.." class="chosen-select-deselect full-width" tabindex="2">
                                 <option value=""></option>
                                 {% for podcast in podcasts %}
                                 <option value="{{ podcast.1 }}">{{ podcast.0 }}</option>
@@ -113,14 +114,14 @@
             <div class="card">
                 <a href="#"><img class="card-img-top" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/artwork/{{ card.0 }}.jpg" alt=""></a>
                 <div class="card-body">
-                    <h5 class="card-title text-center" style="border-bottom:solid 1px black;margin-bottom:0.25rem;padding-bottom:0.75rem;">
+                    <h5 class="card-title text-center thumb-card">
                         <a>{{ card.1 }}</a>
                     </h5>
                     <button id="up-{{ card.2 }}" data-s-id="{{ card.2 }}" data-t-type="up" class="btn btn-light thumbs thumbs-up" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">
-                        <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png" style="width:100%;"/>
+                        <img class="full-width" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png"/>
                     </button>
                     <button id="down-{{ card.2 }}" data-s-id="{{ card.2 }}" data-t-type="down" class="btn btn-light thumbs thumbs-down" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">
-                        <img src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-down-small.png" style="width:100%;"/>
+                        <img class="full-width" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-down-small.png"/>
                     </button>
 
                     <!--Button trigger modal-->
