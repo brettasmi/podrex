@@ -102,9 +102,17 @@
                 <a>{{ card.1 }}</a>
               </h5>
                     <p class="card-text">{{ card.3 }}</p>
-                    <a href="{{ card.4 }}"><img style="width:30%; display:inline; padding-bottom:2.5%; margin-right:2.75%" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/itunes-square.png"/></a>
-                    <a href="{{ card.5 }}"><img style="width:30%; display:inline; padding-bottom:2.5%; margin-right:2.75%" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/stitcher-square.png"/></a>
-                    <a href="{{ card.6 }}"><img style="width:30%; display:inline; padding:5%; margin-top:-1%;background-color:#006c7d;border-radius:10px" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png"></a>
+                    <div class="links-box">
+                        {% if card[4] %}
+                            <a href="{{ card.4 }}"><img class="podcast-link link-image" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/itunes-square.png"/></a>
+                        {% endif %}
+                        {% if card[5] %}
+                            <a href="{{ card.5 }}"><img class="podcast-link link-image" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/stitcher-square.png"/></a>
+                        {% endif %}
+                        {% if card[6] %}
+                            <a href="{{ card.6 }}"><img class="podcast-link link-icon" src="https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png"></a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}

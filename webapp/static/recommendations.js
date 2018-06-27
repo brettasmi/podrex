@@ -30,6 +30,36 @@ submit = function(){
 
             for (let card of result) {
                 let id = card["sid"]
+                let itunes_string = ""
+                let stitcher_string = ""
+                let web_url = ""
+                if (card["itunes_url"] !== null) {
+                    itunes_string = $("<a/>")
+                        .attr("href", card["itunes_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-image")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/itunes-square.png")
+                        )
+                }
+                if (card["stitcher_url"] !== null) {
+                    stitcher_string = $("<a/>")
+                        .attr("href", card["stitcher_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-image")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/stitcher-square.png")
+                        )
+                }
+                if (card["podcast_url"] !== null) {
+                    web_url = $("<a/>")
+                        .attr("href", card["podcast_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-icon")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
+                        )
+                }
                 $("#search-results").append(
                           $("<div/>")
                           .addClass("card h-100")
@@ -60,31 +90,11 @@ submit = function(){
                                  .text(card["description"])
                                )
                                .append(
-                                   $("<a/>")
-                                   .attr("href", card["itunes_url"])
-                                   .append(
-                                       $("<img/>")
-                                       .attr("style","width:30%; display:inline; padding-bottom:2.5%; margin-right:2.75%")
-                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/itunes-square.png")
-                                   )
-                               )
-                               .append(
-                                   $("<a/>")
-                                   .attr("href", card["stitcher_url"])
-                                   .append(
-                                       $("<img/>")
-                                       .attr("style","width:30%; display:inline; padding-bottom:2.5%; margin-right:2.75%")
-                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/stitcher-square.png")
-                                   )
-                               )
-                               .append(
-                                   $("<a/>")
-                                   .attr("href", card["podcast_url"])
-                                   .append(
-                                       $("<img/>")
-                                       .attr("style","width:30%; display:inline; padding:5%; margin-top:-1%;background-color:#006c7d;border-radius:10px")
-                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
-                                   )
+                                   $("<div/>")
+                                   .attr("class", "links-box")
+                                   .append(itunes_string)
+                                   .append(stitcher_string)
+                                   .append(web_url)
                                )
                           )
                        )
