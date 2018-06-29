@@ -361,10 +361,59 @@ populate_cards = function(card_list, result_type){
                                    )
                                )
                                .append(
-                                 $("<p/>")
-                                 .addClass("card-text")
-                                 .attr("style","margin-top:1rem;")
-                                 .text(card["description"])
+                                   $("<button/>")
+                                   .attr("class", "desc-btn btn btn-outline-secondary btn-block")
+                                   .attr("data-toggle", "modal")
+                                   .attr("data-target", "#modal"+card["sid"])
+                                   .text("Description")
+                               )
+                               .append(
+                                   $("<div/>")
+                                   .attr("class", "modal fade")
+                                   .attr("id", "modal"+card["sid"])
+                                   .attr("tabindex", "-1")
+                                   .attr("role", "dialog")
+                                   .attr("aria-hidden", "true")
+                                   .append(
+                                       $("<div/>")
+                                       .attr("class", "modal-dialog")
+                                       .attr("role", "document")
+                                       .append(
+                                           $("<div/>").attr("class", "modal-content")
+                                           .append(
+                                               $("<div/>").attr("class", "modal-header")
+                                               .append(
+                                                   $("<h5/>")
+                                                   .attr("class", "modal-title")
+                                                   .attr("id", "modal"+card["sid"]+"-content")
+                                                   .text(card["title"])
+                                               )
+                                               .append(
+                                                   $("<button/>")
+                                                   .attr("class", "close")
+                                                   .attr("data-dismiss", "modal")
+                                                   .attr("aria-label", "Close")
+                                                   .append(
+                                                       $("<span/>").attr("aria-hidden", "true").html("&times;")
+                                                   )
+                                               )
+                                           )
+                                           .append(
+                                               $("<div/>").attr("class", "modal-body")
+                                               .append($("<p/>").attr("class", "card-text").text(card["description"]))
+                                           )
+                                           .append(
+                                               $("<div/>")
+                                               .attr("class", "modal-footer")
+                                               .append(
+                                                   $("<button/>")
+                                                   .attr("class", "btn btn-secondary")
+                                                   .attr("data-dismiss", "modal")
+                                                   .text("Close")
+                                               )
+                                           )
+                                       )
+                                   )
                                )
                                .append(
                                    $("<div/>")
