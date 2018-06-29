@@ -305,6 +305,7 @@ populate_cards = function(card_list, result_type){
                 $("#"+result_type).append(
                     $("<div/>")
                     .attr("class", "card-col col-lg-2 col-md-4 col-sm-6 portfolio-item")
+                    .attr("id", "recommendation"+card["sid"])
                     .append(
                           $("<div/>")
                           .attr("class", "card-con card")
@@ -351,7 +352,6 @@ populate_cards = function(card_list, result_type){
                                    .attr("data-t-type", "down")
                                    .attr("class", "btn btn-light thumbs thumbs-down")
                                    .attr("type", "button")
-                                   .attr("data-toggle", "button")
                                    .attr("aria-pressed", "false")
                                    .attr("autocomplete", "off")
                                    .append(
@@ -377,7 +377,11 @@ populate_cards = function(card_list, result_type){
                        )
                    )
                    }
+                   $(".thumbs-down").on("click", destroy_card)
                };
 
+destroy_card = function(){
+    $(this).closest(".card-col").remove()
+};
 chosen_listener()
 thumbs_listener()
