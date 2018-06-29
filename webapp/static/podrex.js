@@ -269,5 +269,115 @@ populate_dropdown = function(id) {
     });
 }
 
+populate_cards = function(card_list, result_type){
+            for (let card of card_list) {
+                let id = card["sid"]
+                let itunes_string = ""
+                let stitcher_string = ""
+                let web_url = ""
+                if (card["itunes_url"] !== null) {
+                    itunes_string = $("<a/>")
+                        .attr("href", card["itunes_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-image")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/itunes-square.png")
+                        )
+                }
+                if (card["stitcher_url"] !== null) {
+                    stitcher_string = $("<a/>")
+                        .attr("href", card["stitcher_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-image")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/stitcher-square.png")
+                        )
+                }
+                if (card["podcast_url"] !== null) {
+                    web_url = $("<a/>")
+                        .attr("href", card["podcast_url"])
+                        .append(
+                            $("<img/>")
+                            .attr("class","podcast-link link-icon")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
+                        )
+                }
+                $("#"+result_type).append(
+                    $("<div/>")
+                    .attr("class", "card-col col-lg-2 col-md-4 col-sm-6 portfolio-item")
+                    .append(
+                          $("<div/>")
+                          .attr("class", "card-con card")
+                          .append(
+                              $("<a/>")
+                              .attr("href", "#")
+                                 .append(
+                                     $("<img/>")
+                                      .attr("src", "http://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/"+card["art_id"]+".jpg")
+                                      .addClass("card-img-top")
+                                      )
+                           )
+                          .append(
+                             $("<div/>")
+                               .addClass("card-body")
+                               .append(
+                                 $("<h4/>")
+                                   .addClass("card-title text-center thumb-card")
+                                   .append(
+                                       $("<a/>")
+                                       .text(card["title"])
+                                   )
+                               )
+                               .append(
+                                   $("<button/>")
+                                   .attr("id", "up-"+card["sid"])
+                                   .attr("data-s-id", card["sid"])
+                                   .attr("data-t-type", "up")
+                                   .attr("class", "btn btn-light thumbs thumbs-up")
+                                   .attr("type", "button")
+                                   .attr("data-toggle", "button")
+                                   .attr("aria-pressed", "false")
+                                   .attr("autocomplete", "off")
+                                   .append(
+                                       $("<img/>")
+                                       .attr("class", "thumb-img")
+                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png")
+                                   )
+                               )
+                               .append(
+                                   $("<button/>")
+                                   .attr("id", "down-"+card["sid"])
+                                   .attr("data-s-id", card["sid"])
+                                   .attr("data-t-type", "down")
+                                   .attr("class", "btn btn-light thumbs thumbs-down")
+                                   .attr("type", "button")
+                                   .attr("data-toggle", "button")
+                                   .attr("aria-pressed", "false")
+                                   .attr("autocomplete", "off")
+                                   .append(
+                                       $("<img/>")
+                                       .attr("class", "thumb-img")
+                                       .attr("src", "../static/x.png")
+                                   )
+                               )
+                               .append(
+                                 $("<p/>")
+                                 .addClass("card-text")
+                                 .attr("style","margin-top:1rem;")
+                                 .text(card["description"])
+                               )
+                               .append(
+                                   $("<div/>")
+                                   .attr("class", "links-box")
+                                   .append(itunes_string)
+                                   .append(stitcher_string)
+                                   .append(web_url)
+                               )
+                          )
+                       )
+                   )
+                   }
+               };
+
 chosen_listener()
 thumbs_listener()
