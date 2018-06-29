@@ -1,30 +1,8 @@
 // partially from Matt Drury - https://github.com/madrury/madrury.github.io/blob/master/smoothers/js/parameter-ui.js
-get_selected_parameters = function() {
-    let parameters = {};
-    let sliders = document.getElementsByClassName("slider");
-    let slider = null;
-    for (let i = 0; i < sliders.length; i++) {
-        slider = sliders[i];
-        parameters[slider.getAttribute("data-s-id")] = Number(slider.value);
-    }
-    return parameters;
-};
-get_selected_checkboxes = function() {
-    let check_parameters = {};
-    let checkboxes = document.getElementsByClassName("checkbox");
-    let checkbox = null;
-    for (let i = 0; i < checkboxes.length; i++) {
-        checkbox = checkboxes[i];
-        check_parameters[checkbox.getAttribute("data-s-id")] = (checkbox.checked);
-    }
-    return check_parameters;
-};
 get_favorites = function() {
     let fave_parameters = {};
     let favorites = document.getElementsByClassName("chosen-select-deselect");
-    let favorite = null;
-    for (let i = 0; i < favorites.length; i++) {
-        favorite = favorites[i];
+    for (let favorite of favorites) {
         fave_parameters[$(favorite).val()] = 5;
     }
     return fave_parameters;
@@ -43,16 +21,12 @@ get_thumbs = function() {
     return results;
 };
 submit = function() {
-    parameters = get_selected_parameters()
-    check_parameters = get_selected_checkboxes()
     fave_parameters = get_favorites()
     thumbs = get_thumbs()
     $.post({
         url: "/predictions/",
         contentType: "application/json",
         data: JSON.stringify({
-            "parameters": parameters,
-            "checkboxes": check_parameters,
             "favorites": fave_parameters,
             "thumbs": thumbs
         }),

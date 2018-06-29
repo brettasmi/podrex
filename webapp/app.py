@@ -59,8 +59,6 @@ def predict():
     """
     conn = get_db()
     user_inputs = request.json
-    parameters = user_inputs["parameters"]
-    checkboxes = user_inputs["checkboxes"]
     favorites = user_inputs["favorites"]
     thumbs = user_inputs["thumbs"]
     ratings, indices = [], []
@@ -69,20 +67,6 @@ def predict():
         if v > 0:
             indices.append(int(k))
             ratings.append(int(v))
-    for k, v in parameters.items():
-        if v > 0:
-            indices.append(int(k))
-            ratings.append(int(v))
-    #print(indices, ratings)
-    for k, v in checkboxes.items():
-        if v:
-            try:
-                pop_index = indices.index(int(k))
-                indices.pop(pop_index)
-                ratings.pop(pop_index)
-            except ValueError:
-                indices.append(int(k))
-                ratings.append(0.1)
     for k, v in favorites.items():
         if k != "":
             try:
