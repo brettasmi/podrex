@@ -19,6 +19,22 @@ def get_db():
         conn = g._database = db.connect_db()
     return conn
 
+def get_cards(indices):
+    """
+    Returns jsonified cards ready to send to browser
+
+    Parameters:
+    indices (list of ints): podcast integers corresponding to spark_pid column
+    """
+    conn = get_db()
+    recommendation_data = db.get_podcast_info(conn, indices)
+    #artid, title, sid, description, itunes, stitcher, podcast website
+    cards = [{"art_id":result[0], "title":result[1], "sid":result[2],
+              "description":result[3], "itunes_url":result[4],
+              "stitcher_url":result[5], "podcast_url":result[6]}
+             for result in recommendation_data]
+    return jsonify(cards)
+
 @app.route("/")
 def index():
     """
@@ -80,6 +96,12 @@ def predict():
     if len(dismissed) <= 0:
         dismissed = None
     predictions = model.fit_predict(ratings, indices, dismissed)
+    return get_cards(predictions)
+
+@app.route("/save_recommendations/", methods=["POST"])
+def save_recommendations():
+    """
+    """
     unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
     return unique_id
 
@@ -108,14 +130,7 @@ def text_search():
     conn = get_db()
     model = PodcastRecommender()
     results = model.nlp_search(search["search"])
-    recommendation_data = db.get_podcast_info(conn, results)
-    #artid, title, sid, description, itunes, stitcher, podcast website
-    cards = [{"art_id":result[0], "title":result[1], "sid":result[2],
-              "description":result[3], "itunes_url":result[4],
-              "stitcher_url":result[5], "podcast_url":result[6]}
-             for result in recommendation_data]
-    cards_json = jsonify(cards)
-    return cards_json
+    return get_cards(results)
 
 @app.teardown_appcontext
 def close_connection(exception):
