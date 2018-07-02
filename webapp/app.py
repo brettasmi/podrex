@@ -61,8 +61,8 @@ def predict():
     user_inputs = request.json
     favorites = user_inputs["favorites"]
     thumbs = user_inputs["thumbs"]
+    dismissed = user_inputs["dismissed"]
     ratings, indices = [], []
-    #print(parameters, checkboxes, favorites)
     for k, v in thumbs.items():
         if v > 0:
             indices.append(int(k))
@@ -76,11 +76,10 @@ def predict():
             except ValueError:
                 indices.append(int(k))
                 ratings.append(5)
-    #print(indices, ratings)
-    predictions = model.fit_predict(ratings, indices)
+    dismissed = list({int(i) for i in dismissed})
+    predictions = model.fit_predict(ratings, indices, dismissed)
     unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
     return unique_id
-
 
 @app.route("/recommendations/<unique_id>")
 def show_predictions(unique_id):

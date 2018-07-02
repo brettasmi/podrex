@@ -23,6 +23,25 @@ get_thumbs = function() {
 submit = function() {
     fave_parameters = get_favorites()
     thumbs = get_thumbs()
+    // remove unused podcasts
+    $.post({
+        url: "/predictions/",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "favorites": fave_parameters,
+            "thumbs": thumbs,
+            "dismissed": dismissed
+        }),
+        success: function(result) {
+            //
+            {
+                window.location.href = '/recommendations/' + result;
+            };
+        }
+    });
+}
+save_recommendations = function(result) {
+    // this isn't complete yet
     $.post({
         url: "/predictions/",
         contentType: "application/json",
@@ -31,18 +50,18 @@ submit = function() {
             "thumbs": thumbs
         }),
         success: function(result) {
+            //
             {
                 window.location.href = '/recommendations/' + result;
             };
         }
     });
-}
-
+};
 thumbs_listener = function() {
     $('.thumbs').on('click', function() {
-        let id = $(this).attr('id');
-        let pid = $("#" + id).attr('data-s-id');
-        let t_type = $("#" + id).attr('data-t-type');
+        let id = $(this).attr('id'); // div id
+        let pid = $("#" + id).attr('data-s-id'); // podcast id
+        let t_type = $("#" + id).attr('data-t-type'); // thumb type (up/down)
         let active = $("#" + id).attr('aria-pressed');
         if (active === "false") {
             if (t_type === "up") {
@@ -57,6 +76,7 @@ thumbs_listener = function() {
                 }.bind(this), 10);
             }
         } else {}
+        // submit
     });
 }
 
@@ -79,7 +99,7 @@ chosen_listener = function() {
                         .append(
                             $("<img/>")
                             .attr("src", "http://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/" + result["podcast_art_id"] + ".jpg")
-                            .attr("style", "margin-top:1rem;")
+                            .attr("style", "margin-top:1rem;width:60%;height:60%;margin-left:20%;margin-right:20%;")
                             .addClass("card-img-top")
                         )
                     );
@@ -328,6 +348,7 @@ populate_cards = function(card_list, result_type){
                                    .attr("type", "button")
                                    .attr("aria-pressed", "false")
                                    .attr("autocomplete", "off")
+                                   .attr("title", "Permanently remove from your recommendations.")
                                    .append(
                                        $("<img/>")
                                        .attr("class", "thumb-img")
@@ -404,7 +425,9 @@ populate_cards = function(card_list, result_type){
                };
 
 destroy_card = function(){
+    dismissed.push($(this).attr("data-s-id"))
     $(this).closest(".card-col").remove()
 };
+let dismissed = []
 chosen_listener()
 thumbs_listener()

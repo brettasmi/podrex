@@ -77,7 +77,7 @@ class PodcastRecommender:
         self.bonused_d = self.approx_d + bonus
 
 
-    def _calculate_d(self, ratings, indices, V, penalize=True):
+    def _calculate_d(self, ratings, indices, V, dismissed, penalize=True):
         """
         Returns approximate d vector from a set of ratings on popular items
 
@@ -93,28 +93,27 @@ class PodcastRecommender:
         approx_d (numpy array): approximated d vector of length m representing
                                 predicted user ratings
         """
-        #print(indices, ratings)
-        self.ratings_array = np.array(ratings)
-        self.ratings_indices = np.array(indices)
-        self.V = V
-        #print(self.V.shape)
-        self.V_sub = self.V.T[:,self.ratings_indices]
-        self.approx_u = np.linalg.lstsq(self.V_sub.T, self.ratings_array)
-        self.approx_d = np.dot(self.approx_u[0], self.V.T)
-        #print(self.approx_d)
+        ratings_array = np.array(ratings)
+        ratings_indices = np.array(indices)
+        dismissed_indices = np.array(dismissed)
+        dismissed_array = np.empty(dismissed_indices.shape, dtype=int)
+        dismissed_array.fill(5)
+        V_sub = V.T[:,ratings_indices]
+        self.approx_u = np.linalg.lstsq(V_sub.T, ratings_array)
+        self.approx_d = np.dot(self.approx_u[0], V.T)
         if penalize == True:
-            penalty = np.zeros(self.V.shape[0])
-            penalty[self.ratings_indices] = self.ratings_array
+            penalty = np.zeros(V.shape[0])
+            penalty[ratings_indices] = ratings_array
+            penalty[dismissed_indices] = dismissed_array
             self.approx_d -= penalty
 
     def _add_nlp(self, ratings, indices, pairwise_dist_2d, bonus_level):
         for couplet in zip(ratings, indices):
             if couplet[0]==5:
                 bonus_nlp = 1-(pairwise_dist_2d[couplet[1],:]) * (1/bonus_level)
-                #print(bonus_nlp)
                 self.bonused_d += bonus_nlp
 
-    def fit_predict(self, ratings, indices, n_items=16):
+    def fit_predict(self, ratings, indices, dismissed, n_items=16):
         """
         Wrapper function to analyze and give predictions based on a user's
         input ratings.
@@ -123,6 +122,7 @@ class PodcastRecommender:
         ----------
         ratings (list): input user ratings
         indices (list): indices for spark_pid corresponding to ratings
+        dismissed (set): indices for spark_pid to
         n_items (int): number of recommendations to return
 
         Returns
@@ -130,7 +130,7 @@ class PodcastRecommender:
         final_recommendations (list): indices for spark_pid related
                                      corresponding items
         """
-        self._calculate_d(ratings, indices, V)
+        self._calculate_d(ratings, indices, V, dismissed)
         self._add_bonus(bonus_array, 6)
         self._add_nlp(ratings, indices, pairwise_dist_2d, 1)
         raw_recommendations = self._get_recommendations(bonus=True,
