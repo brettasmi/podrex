@@ -77,6 +77,8 @@ def predict():
                 indices.append(int(k))
                 ratings.append(5)
     dismissed = list({int(i) for i in dismissed})
+    if len(dismissed) <= 0:
+        dismissed = None
     predictions = model.fit_predict(ratings, indices, dismissed)
     unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
     return unique_id

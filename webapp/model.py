@@ -77,7 +77,7 @@ class PodcastRecommender:
         self.bonused_d = self.approx_d + bonus
 
 
-    def _calculate_d(self, ratings, indices, V, dismissed, penalize=True):
+    def _calculate_d(self, ratings, indices, V, dismissed=None, penalize=True):
         """
         Returns approximate d vector from a set of ratings on popular items
 
@@ -95,16 +95,18 @@ class PodcastRecommender:
         """
         ratings_array = np.array(ratings)
         ratings_indices = np.array(indices)
-        dismissed_indices = np.array(dismissed)
-        dismissed_array = np.empty(dismissed_indices.shape, dtype=int)
-        dismissed_array.fill(5)
+        if dismissed:
+            dismissed_indices = np.array(dismissed)
+            dismissed_array = np.empty(dismissed_indices.shape, dtype=int)
+            dismissed_array.fill(5)
         V_sub = V.T[:,ratings_indices]
         self.approx_u = np.linalg.lstsq(V_sub.T, ratings_array)
         self.approx_d = np.dot(self.approx_u[0], V.T)
         if penalize == True:
             penalty = np.zeros(V.shape[0])
             penalty[ratings_indices] = ratings_array
-            penalty[dismissed_indices] = dismissed_array
+            if dismissed:
+                penalty[dismissed_indices] = dismissed_array
             self.approx_d -= penalty
 
     def _add_nlp(self, ratings, indices, pairwise_dist_2d, bonus_level):
@@ -113,7 +115,7 @@ class PodcastRecommender:
                 bonus_nlp = 1-(pairwise_dist_2d[couplet[1],:]) * (1/bonus_level)
                 self.bonused_d += bonus_nlp
 
-    def fit_predict(self, ratings, indices, dismissed, n_items=16):
+    def fit_predict(self, ratings, indices, dismissed=None, n_items=16):
         """
         Wrapper function to analyze and give predictions based on a user's
         input ratings.
