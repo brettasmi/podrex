@@ -25,7 +25,6 @@ get_thumbs = function() {
 submit = function() {
     fave_parameters = get_favorites()
     thumbs = get_thumbs()
-    // remove unused podcasts
     $.post({
         url: "/predictions/",
         contentType: "application/json",
@@ -53,7 +52,6 @@ submit = function() {
     });
 }
 save_recommendations = function(result) {
-    // this isn't complete yet
     $.post({
         url: "/predictions/",
         contentType: "application/json",
@@ -186,14 +184,11 @@ chosen_listener = function() {
         });
         let curr_selects = $(".chosen-select-deselect")
         let update_flag = true
-        //console.log(update_flag)
         for (let select_menu of curr_selects) {
-            //console.log($(select_menu).val())
             if ($(select_menu).val() === "") {
                 update_flag = false
             } else {}
         }
-        //console.log(update_flag)
         if (update_flag === true) {
             new_favorite_podcast()
         } else {}
@@ -203,7 +198,6 @@ chosen_listener = function() {
 
 $(".chosen-select-deselect").chosen().change(function() {
     var id = $(this).attr('id');
-    //console.log(id);
 });
 var div_counter = 0;
 new_favorite_podcast = function() {
@@ -258,7 +252,6 @@ new_favorite_podcast = function() {
     });
     populate_dropdown(curr_div_id)
     chosen_listener()
-    //console.log(curr_div_id)
 }
 
 populate_dropdown = function(id) {
