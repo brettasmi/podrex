@@ -296,9 +296,8 @@ populate_cards = function(card_list, result_type){
                             .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
                         )
                 }
-                $("#"+result_type).append(
-                    $("<div/>")
-                    .attr("class", "card-col col-lg-2 col-md-4 col-sm-6 portfolio-item")
+                let new_card = $("<div/>")
+                    new_card.attr("class", "card-col col-lg-2 col-md-4 col-sm-6 portfolio-item")
                     .attr("id", "recommendation"+card["sid"])
                     .append(
                           $("<div/>")
@@ -419,7 +418,7 @@ populate_cards = function(card_list, result_type){
                                )
                           )
                        )
-                   )
+                   $(new_card).hide().appendTo("#"+result_type).fadeIn(1000)
                    }
                    $(".thumbs-down").on("click", destroy_card)
                    $(".thumbs-up").on("click", thumbs_listener)
@@ -427,7 +426,7 @@ populate_cards = function(card_list, result_type){
 
 destroy_card = function(){
     dismissed.push($(this).attr("data-s-id"))
-    $(this).closest(".card-col").remove()
+    $(this).closest(".card-col").fadeOut(500, function() { $(this).remove(); });
 };
 let dismissed = []
 $(chosen_listener())
