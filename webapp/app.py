@@ -77,6 +77,8 @@ def predict():
     user_inputs = request.json
     favorites = user_inputs["favorites"]
     thumbs = user_inputs["thumbs"]
+    if len(favorites) == 0 and len(thumbs) == 0:
+        return "empty"
     dismissed = user_inputs["dismissed"]
     ratings, indices = [], []
     for k, v in thumbs.items():

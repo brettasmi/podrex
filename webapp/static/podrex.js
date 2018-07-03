@@ -3,7 +3,9 @@ get_favorites = function() {
     let fave_parameters = {};
     let favorites = document.getElementsByClassName("chosen-select-deselect");
     for (let favorite of favorites) {
-        fave_parameters[$(favorite).val()] = 5;
+        if ($(favorite).val() !== "") {
+            fave_parameters[$(favorite).val()] = 5;
+        }
     }
     return fave_parameters;
 };
@@ -33,9 +35,19 @@ submit = function() {
             "dismissed": dismissed
         }),
         success: function(result) {
-            //
-            {
-                window.location.href = '/recommendations/' + result;
+            if (result === "empty"){
+                $("#recommendations").fadeOut(750, function() { $(this).remove(); });
+            } else {
+                if (!$("#recommendations").length ){
+                    $("#main-content").append(
+                        $("<div/>")
+                        .attr("id", "recommendations")
+                        .attr("class", "card-deck")
+                    )
+                } else {
+                }
+                $(".thumbs-up").not(".active").closest(".card-col").fadeOut(750, function(){$(this).remove(); });
+                populate_cards(result, "recommendations")
             };
         }
     });
