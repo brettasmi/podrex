@@ -115,7 +115,7 @@ class PodcastRecommender:
                 bonus_nlp = 1-(pairwise_dist_2d[couplet[1],:]) * (1/bonus_level)
                 self.bonused_d += bonus_nlp
 
-    def fit_predict(self, ratings, indices, dismissed=None, n_items=16):
+    def fit_predict(self, ratings, indices, dismissed=None, n_items=18):
         """
         Wrapper function to analyze and give predictions based on a user's
         input ratings.
