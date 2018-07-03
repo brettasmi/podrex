@@ -221,7 +221,7 @@ new_favorite_podcast = function() {
                     .addClass("card-title text-center")
                     .append(
                         $("<a/>")
-                        .text("Another of my favorite podcasts:")
+                        .text("Another favorite podcast")
                     )
                 )
                 .append(
@@ -316,7 +316,7 @@ populate_cards = function(card_list, result_type){
                              $("<div/>")
                                .addClass("card-body")
                                .append(
-                                 $("<h4/>")
+                                 $("<h5/>")
                                    .addClass("card-title text-center thumb-card")
                                    .append(
                                        $("<a/>")
@@ -352,7 +352,7 @@ populate_cards = function(card_list, result_type){
                                    .append(
                                        $("<img/>")
                                        .attr("class", "thumb-img")
-                                       .attr("src", "../static/x.png")
+                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/x.png")
                                    )
                                )
                                .append(
