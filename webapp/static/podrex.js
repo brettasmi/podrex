@@ -70,26 +70,20 @@ save_recommendations = function(result) {
     });
 };
 thumbs_listener = function() {
-    $('.thumbs').on('click', function() {
-        let id = $(this).attr('id'); // div id
-        let pid = $("#" + id).attr('data-s-id'); // podcast id
-        let t_type = $("#" + id).attr('data-t-type'); // thumb type (up/down)
-        let active = $("#" + id).attr('aria-pressed');
-        if (active === "false") {
-            if (t_type === "up") {
-                let other = "#down-" + pid
-                setTimeout(function() {
-                    $(other).removeClass('active').attr('aria-pressed', false);
-                }.bind(this), 10);
-            } else {
-                let other = "#up-" + pid
-                setTimeout(function() {
-                    $(other).removeClass('active').attr('aria-pressed', false);
-                }.bind(this), 10);
-            }
-        } else {}
-        // submit
-    });
+    let id = $(this).attr('id'); // div id
+    let pid = $("#" + id).attr('data-s-id'); // data id
+    let t_type = $("#" + id).attr('data-t-type'); // thumb type (up/down)
+    let active = $("#" + id).attr('aria-pressed');
+    if (active === "false") {
+        if (t_type === "up") {
+            let other = "#down-" + pid
+                $(other).removeClass('active').attr('aria-pressed', false);
+        } else {
+            let other = "#up-" + pid
+                $(other).removeClass('active').attr('aria-pressed', false);
+        }
+    }
+    setTimeout(submit, 100)
 }
 
 chosen_listener = function() {
@@ -434,6 +428,7 @@ populate_cards = function(card_list, result_type){
                    )
                    }
                    $(".thumbs-down").on("click", destroy_card)
+                   $(".thumbs-up").on("click", thumbs_listener)
                };
 
 destroy_card = function(){
@@ -441,5 +436,4 @@ destroy_card = function(){
     $(this).closest(".card-col").remove()
 };
 let dismissed = []
-chosen_listener()
-thumbs_listener()
+$(chosen_listener())
