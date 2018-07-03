@@ -197,6 +197,7 @@ chosen_listener = function() {
         if (update_flag === true) {
             new_favorite_podcast()
         } else {}
+        setTimeout(submit, 100)
     });
 };
 
