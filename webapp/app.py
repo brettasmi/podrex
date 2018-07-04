@@ -31,7 +31,7 @@ def get_cards(indices):
               "description":result[3], "itunes_url":result[4],
               "stitcher_url":result[5], "podcast_url":result[6]}
              for result in recommendation_data]
-    return jsonify(cards)
+    return cards
 
 @app.route("/")
 def index():
@@ -95,7 +95,7 @@ def predict():
     if len(dismissed) <= 0:
         dismissed = None
     predictions = model.fit_predict(ratings, indices, dismissed)
-    return get_cards(predictions)
+    return jsonify(get_cards(predictions))
 
 @app.route("/save_recommendations/", methods=["POST"])
 def save_recommendations():
@@ -104,15 +104,21 @@ def save_recommendations():
     unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
     return unique_id
 
-@app.route("/recommendations/<unique_id>")
-def show_predictions(unique_id):
+@app.route("/recommendations/")
+def show_predictions():
     """
     Returns personalized recommendation page to the user.
     """
+    likes = request.args.getlist("like")
+    dismissed = request.args.getlist("dismissed")
     conn = get_db()
     try:
-        recommendations = db.get_prediction_info(conn, unique_id)
-        return render_template("recommendations.html", cards=recommendations)
+        indices = [int(like) for like in likes]
+        ratings = [5 for podcast in range(len(indices))]
+        dismissed = [int(dnl) for dnl in dismissed]
+        predictions = model.fit_predict(ratings, indices, dismissed)
+        cards = get_cards(predictions)
+        return render_template("recommendations.html", cards=cards)
     except:
         return render_template("sorry.html")
 
