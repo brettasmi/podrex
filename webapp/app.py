@@ -8,8 +8,6 @@ from model import PodcastRecommender
 app = Flask(__name__)
 
 model = PodcastRecommender()
-with open("to_rate_list.pkl", "rb") as in_pickle:
-    to_rate_list = pickle.load(in_pickle)
 with open("podcast_pid_list.pickle", "rb") as in_pickle:
     podcast_pid_list = pickle.load(in_pickle)
 
@@ -40,8 +38,7 @@ def index():
     """
     Returns home page to render to user
     """
-    shuffle(to_rate_list)
-    return render_template("index.html", cards=to_rate_list,
+    return render_template("index.html",
                            podcasts=podcast_pid_list)
 
 @app.route("/dd-update/", methods=["POST"])
