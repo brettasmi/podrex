@@ -269,6 +269,8 @@ populate_cards = function(card_list, result_type){
                 let itunes_string = ""
                 let stitcher_string = ""
                 let web_url = ""
+                let thumbs_up = ""
+                let dismiss_button = ""
                 if (card["itunes_url"] !== null) {
                     itunes_string = $("<a/>")
                         .attr("href", card["itunes_url"])
@@ -299,6 +301,37 @@ populate_cards = function(card_list, result_type){
                             .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/white-link.png")
                         )
                 }
+                if (result_type === "recommendations") {
+                    thumbs_up = $("<button/>")
+                        .attr("id", "up-"+card["sid"])
+                        .attr("data-s-id", card["sid"])
+                        .attr("data-t-type", "up")
+                        .attr("class", "btn btn-light thumbs thumbs-up")
+                        .attr("type", "button")
+                        .attr("data-toggle", "button")
+                        .attr("aria-pressed", "false")
+                        .attr("autocomplete", "off")
+                        .attr("title", "I know and like this podcast.")
+                        .append(
+                            $("<img/>")
+                            .attr("class", "thumb-img")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png")
+                        )
+                    dismiss_button = $("<button/>")
+                        .attr("id", "down-"+card["sid"])
+                        .attr("data-s-id", card["sid"])
+                        .attr("data-t-type", "down")
+                        .attr("class", "btn btn-light thumbs thumbs-down")
+                        .attr("type", "button")
+                        .attr("aria-pressed", "false")
+                        .attr("autocomplete", "off")
+                        .attr("title", "Permanently remove from your recommendations.")
+                        .append(
+                            $("<img/>")
+                            .attr("class", "thumb-img")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/x.png")
+                        )
+                }
                 let new_card = $("<div/>")
                     new_card.attr("class", "card-col col-lg-2 col-md-4 col-sm-6 portfolio-item")
                     .attr("id", "recommendation"+card["sid"])
@@ -325,39 +358,8 @@ populate_cards = function(card_list, result_type){
                                        .text(card["title"])
                                    )
                                )
-                               .append(
-                                   $("<button/>")
-                                   .attr("id", "up-"+card["sid"])
-                                   .attr("data-s-id", card["sid"])
-                                   .attr("data-t-type", "up")
-                                   .attr("class", "btn btn-light thumbs thumbs-up")
-                                   .attr("type", "button")
-                                   .attr("data-toggle", "button")
-                                   .attr("aria-pressed", "false")
-                                   .attr("autocomplete", "off")
-                                   .attr("title", "I know and like this podcast.")
-                                   .append(
-                                       $("<img/>")
-                                       .attr("class", "thumb-img")
-                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/thumbs-up-small.png")
-                                   )
-                               )
-                               .append(
-                                   $("<button/>")
-                                   .attr("id", "down-"+card["sid"])
-                                   .attr("data-s-id", card["sid"])
-                                   .attr("data-t-type", "down")
-                                   .attr("class", "btn btn-light thumbs thumbs-down")
-                                   .attr("type", "button")
-                                   .attr("aria-pressed", "false")
-                                   .attr("autocomplete", "off")
-                                   .attr("title", "Permanently remove from your recommendations.")
-                                   .append(
-                                       $("<img/>")
-                                       .attr("class", "thumb-img")
-                                       .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/images/x.png")
-                                   )
-                               )
+                               .append(thumbs_up)
+                               .append(dismiss_button)
                                .append(
                                    $("<button/>")
                                    .attr("class", "desc-btn btn btn-outline-secondary btn-block")
