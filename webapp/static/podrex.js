@@ -196,10 +196,10 @@ chosen_listener = function() {
     });
 };
 
-$(".chosen-select-deselect").chosen().change(function() {
+chosen_change = function() {$(".chosen-select-deselect").chosen().change(function() {
     var id = $(this).attr('id');
-});
-var div_counter = 0;
+});};
+
 new_favorite_podcast = function() {
     div_counter++
     let curr_div_id = "fave" + div_counter
