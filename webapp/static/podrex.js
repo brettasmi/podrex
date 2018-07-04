@@ -272,6 +272,7 @@ populate_cards = function(card_list, result_type){
                 if (card["itunes_url"] !== null) {
                     itunes_string = $("<a/>")
                         .attr("href", card["itunes_url"])
+                        .attr("title", card["title"] + " at iTunes")
                         .append(
                             $("<img/>")
                             .attr("class","podcast-link link-image")
@@ -281,6 +282,7 @@ populate_cards = function(card_list, result_type){
                 if (card["stitcher_url"] !== null) {
                     stitcher_string = $("<a/>")
                         .attr("href", card["stitcher_url"])
+                        .attr("title", card["title"] + " at Stitcher")
                         .append(
                             $("<img/>")
                             .attr("class","podcast-link link-image")
@@ -290,6 +292,7 @@ populate_cards = function(card_list, result_type){
                 if (card["podcast_url"] !== null) {
                     web_url = $("<a/>")
                         .attr("href", card["podcast_url"])
+                        .attr("title", card["title"] + " website")
                         .append(
                             $("<img/>")
                             .attr("class","podcast-link link-icon")
@@ -332,6 +335,7 @@ populate_cards = function(card_list, result_type){
                                    .attr("data-toggle", "button")
                                    .attr("aria-pressed", "false")
                                    .attr("autocomplete", "off")
+                                   .attr("title", "I know and like this podcast.")
                                    .append(
                                        $("<img/>")
                                        .attr("class", "thumb-img")
@@ -359,6 +363,7 @@ populate_cards = function(card_list, result_type){
                                    .attr("class", "desc-btn btn btn-outline-secondary btn-block")
                                    .attr("data-toggle", "modal")
                                    .attr("data-target", "#modal"+card["sid"])
+                                   .attr("title", "View podcast description.")
                                    .text("Description")
                                )
                                .append(
@@ -387,6 +392,7 @@ populate_cards = function(card_list, result_type){
                                                    .attr("class", "close")
                                                    .attr("data-dismiss", "modal")
                                                    .attr("aria-label", "Close")
+                                                   .attr("title", "Close description box")
                                                    .append(
                                                        $("<span/>").attr("aria-hidden", "true").html("&times;")
                                                    )
