@@ -379,6 +379,7 @@ populate_cards = function(card_list, result_type){
                           .append(
                              $("<div/>")
                                .addClass("card-body")
+                               .attr("data-s-id", card["sid"])
                                .append(
                                  $("<h5/>")
                                    .addClass("card-title text-center thumb-card")
