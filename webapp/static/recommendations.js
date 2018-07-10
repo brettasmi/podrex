@@ -117,8 +117,79 @@ submit = function(){
     });
 }
 
-$('#text-search').keypress(function(e){
-    if(e.which == 13){//Enter key pressed
-        $('#search-button').click();//Trigger search button click event
-    }
-});
+visualize = function(){
+    $("#saved-recommendations")
+        .before($("<div/>").attr("class", "row")
+        .append(
+            $("<div/>")
+                .attr("id", "graph")
+                .attr("class", "chart justify-content-center text-center col-md-8 col-lg-9 col-sm-12"))
+        .append(
+            $("<div/>")
+                .attr("id", "d3-podcast-info")
+                .attr("class", "justify-content-center text-center col-md-4 col-lg-3 col-sm-12")
+                .text("Click a circle to see more information about the podcast").fadeIn(3000)
+        ))
+        .append(
+            $("<div/>")
+            .attr("class", "modal fade")
+            .attr("id", "d3modal")
+            .attr("tabindex", "-1")
+            .attr("role", "dialog")
+            .attr("aria-hidden", "true")
+            .append(
+                $("<div/>")
+                .attr("class", "modal-dialog")
+                .attr("role", "document")
+                .append(
+                    $("<div/>").attr("class", "modal-content")
+                    .append(
+                        $("<div/>").attr("class", "modal-header")
+                        .append(
+                            $("<button/>")
+                            .attr("class", "close")
+                            .attr("data-dismiss", "modal")
+                            .attr("aria-label", "Close")
+                            .attr("title", "Close description box")
+                            .append(
+                                $("<span/>").attr("aria-hidden", "true").html("&times;")
+                            )
+                        )
+                    )
+                    .append(
+                        $("<div/>").attr("class", "modal-body")
+                            .append($("<p/>").attr("id", "d3-podcast-description"))
+                    )
+                    .append(
+                        $("<div/>")
+                        .attr("class", "modal-footer")
+                        .append(
+                            $("<button/>")
+                            .attr("class", "btn btn-secondary")
+                            .attr("data-dismiss", "modal")
+                            .text("Close")
+                        )
+                    )
+                )
+            )
+        )
+        setup() // from d3app.js to set up svg params
+        render() // from d3app.js to render first graph
+        // get graph json
+        // start d3
+};
+get_graph = function(click_pod=null, update_type=null) {
+    $.post({
+        url: "../graph/",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "podcasts":ids,
+            "update_podcast":click_pod,
+            "update_type":update_type
+        }),
+        success: function(result) {
+            graph_data = result
+            console.log(result)
+        }
+    });
+};
