@@ -107,12 +107,17 @@
     <script src="../static/vendor/chosen/chosen.jquery.js"></script>
     <script src="../static/vendor/chosen/docsupport/init.js"></script>
     <script src="../static/vendor/chosen/docsupport/prism.js"></script>
+    <!-- d3-graph related js -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="../static/d3app.js"></script>
     <!-- Podrex custom js -->
     <script src="../static/podrex.js"></script>
+    <script src="../static/recommendations.js"></script>
 
     <!-- variable caching and initial rendering-->
     <script>
         const saved_podcasts = {{ cards|tojson }}
+        let ids = {{ ids|tojson }}
         populate_cards(saved_podcasts, "saved-recommendations")
     </script>
 
