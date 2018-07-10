@@ -71,5 +71,59 @@ class d3Graph:
             cursor.close()
             return (result[0])
         cursor.close()
-        return result[0]
-    cursor.close()
+
+    def construct_graph(self, conn, id_dict):
+        """Returns initial d3 graph"""
+        if len(self.old_nodes) == 0:
+            nodes_combos = [i for i in combinations(self.nodes, 2)]
+        else:
+            nodes_combos = [i for i in product(self.new_nodes, self.old_nodes)]
+        for nodes in nodes_combos:
+            link = self._get_listener_overlap(conn, nodes[0], nodes[1])
+            if link:
+                if link > 30:
+                    self.graph["edges"].append({"source": str(nodes[0]),
+                                            "target": str(nodes[1]),
+                                            "value": int(np.log(link))-2})
+        if len(self.old_nodes) == 0:
+            nodes_data = db.get_podcast_info(conn, self.nodes)
+        else:
+            nodes_data = db.get_podcast_info(conn, self.new_nodes)
+        for data_list in nodes_data:
+            data_list.extend(list(self._get_bonus(data_list[2], self.bonus_df)))
+            self.graph["nodes"].append(self._make_node_dict(data_list))
+        self.graph["nodes"] = list({value["id"]:value for value in self.graph["nodes"]}.values())
+        #print(id_dict)
+        for node_data in self.graph["nodes"]:
+            node_data["status"] = self._get_status(int(node_data["id"]), id_dict)
+            #print(node_data["status"])
+        return self.graph
+
+    def _make_node_dict(self, data):
+        """Returns a dictionary for json from data"""
+        return {"podcast_id":data[0], "podcast_name":data[1],
+            "id":str(data[2]), "description":data[3], "itunes_url":data[4],
+            "stitcher_url":data[5], "website_url":data[6], "pop":data[7],
+            "size":data[8]}
+    def _get_status(self, spark_id, id_dict):
+        """Returns status that corresponds to stroke-color in d3"""
+        if spark_id in id_dict["liked"]:
+            return "liked"
+        elif spark_id in id_dict["recommended"]:
+            return "recommended"
+        elif spark_id in id_dict["new_nodes"]:
+            return "newly_added"
+        else:
+            return "previously_added"
+
+    def _get_bonus(self, spark_id, bonus_df):
+        """Returns two values that correspond to size and color for the node
+        depicting the podcast represented by `spark_id`"""
+        if spark_id <= 3010:
+            pop = float(bonus_df["bonus_one"].loc[bonus_df["spark_pid"] \
+                == spark_id])
+            size = int(np.log(bonus_df["rating_count"].loc[bonus_df["spark_pid"] \
+                == spark_id])*1.5)
+            return pop, size
+        return (np.mean(bonus_df["bonus_one"]),
+            int(np.mean(np.log(bonus_df["rating_count"]))))
