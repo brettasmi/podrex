@@ -26,6 +26,10 @@
 .full-width {
     width:100%;
 }
+.width-60 {
+    width:60%;
+    margin-bottom:0.2rem;
+}
 .thumb-card {
     border-bottom:solid 1px black;
     margin-bottom:0.25rem;
@@ -55,4 +59,45 @@
     padding-bottom:0.5rem;
     border-radius:5px;
     text-align:center;
+}
+.sidebar-description{
+    background-color: #f5f5f5;
+    padding: 0.3rem;
+    margin: 0.2rem;
+    border-radius: 0.3rem;
+    max-height:11rem;
+    overflow: scroll;
+}
+
+.add-podcast-button{
+    white-space: normal;
+    padding: 0.3rem;
+    margin: 0.2rem;
+    font-size: 0.85rem;
+}
+input.placeholder {
+    text-align: center;
+}
+/* d3 graph */
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+.nodes circle {
+  stroke-width: 1.5px;
+  stroke:#fff;
+}
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    padding: 0.3rem;
+    font: 12px sans-serif;
+    background: #F8F8F8;
+    border: 0px;
+    border-radius: 3px;
+    pointer-events: none;
+}
+.tooltip-img {
+    margin-bottom:0.15rem;
 }
