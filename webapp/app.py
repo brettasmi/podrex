@@ -181,7 +181,7 @@ def get_graph():
     if update_type == "nlp":
         network.five_by_nlp(update_pod, pairwise_dist_2d)
     elif update_type == "listeners":
-        network.five_by_listeners(conn, update_pod)
+        network.five_by_listeners(conn, update_pod, network.old_nodes)
     podcasts["new_nodes"] = network.new_nodes.copy()
     id_dict = {i:set(podcasts[i]) for i in podcasts} # move inside class
     return jsonify(network.construct_graph(conn, id_dict))

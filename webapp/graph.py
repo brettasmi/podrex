@@ -26,16 +26,19 @@ class d3Graph:
             self.graph = {"edges": [], "nodes": []}
             self.nodes = set(nodes)
 
-    def five_by_listeners(self, conn, podcast):
+    def five_by_listeners(self, conn, podcast, podcast_list):
         """Returns the five podcasts with the most shared listeners"""
         self.new_nodes = []
         podcast = self.lookup_dict[podcast]
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM relationships "
-                       "WHERE (podcast_1 = (%s)) "
-                       "OR (podcast_2 = (%s)) "
+                       "WHERE (podcast_1 = %(podcast)s "
+                       "AND podcast_2 NOT IN %(podcasts)s) "
+                       "OR (podcast_2 = %(podcast)s "
+                       "AND podcast_1 NOT IN %(podcasts)s) "
                        "ORDER BY listeners DESC "
-                       "LIMIT 5", (podcast, podcast))
+                       "LIMIT 5", {"podcast":podcast,
+                            "podcasts":tuple(podcast_list)})
         results = cursor.fetchall()
         for result in results:
             if result[0] == podcast:
