@@ -81,10 +81,10 @@ class d3Graph:
         for nodes in nodes_combos:
             link = self._get_listener_overlap(conn, nodes[0], nodes[1])
             if link:
-                if link > 30:
+                if link > 10:
                     self.graph["edges"].append({"source": str(nodes[0]),
                                             "target": str(nodes[1]),
-                                            "value": int(np.log(link))-2})
+                                            "value": int(np.log(link))-1})
         if len(self.old_nodes) == 0:
             nodes_data = db.get_podcast_info(conn, self.nodes)
         else:

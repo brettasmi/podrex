@@ -81,7 +81,7 @@ input.placeholder {
 /* d3 graph */
 .links line {
   stroke: #999;
-  stroke-opacity: 0.6;
+  stroke-opacity: 0.4;
 }
 .nodes circle {
   stroke-width: 1.5px;

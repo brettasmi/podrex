@@ -52,8 +52,8 @@ const color_dict = {"liked":"#000000",
                     "previously_added":"#999999"}
 // set up simulation basic parameters
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(65))
-    .force("charge", d3.forceManyBody().strength(-100).distanceMin(40).distanceMax(85))
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(100))
+    .force("charge", d3.forceManyBody().strength(-60).distanceMin(0).distanceMax(85))
     .force("collide", d3.forceCollide())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -88,6 +88,8 @@ function render(graph=null, update_podcast=null, update_type=null) {
             .call(function(node) {
                 node.transition().duration(1500)
                   .attr("r", function(d) { return d.size; })
+                  .attr("cx", function(d) {return d.x; })
+                  .attr("cy", function(d) {return d.y; });
             })
             //.attr("fill", function(d) { return color(d.pop); })
             .attr("fill", function(d) { return color_dict[d.status]; } )
@@ -154,7 +156,12 @@ function render(graph=null, update_podcast=null, update_type=null) {
 
         link = link
             .enter().append("line")
-            .attr("stroke-width", function(d) { return d.value; })
+            .call(function(link) {
+                link
+                .transition()
+                .duration(500)
+                .attr("stroke-width", function(d) { return d.value; })
+            })
             .merge(link);
 
         // add nodes and links to the siumlation
@@ -294,7 +301,7 @@ function update_info_sidebar (podcast) {
             .attr("id", "add-description-button")
             .attr("data-s-id", podcast.id)
             .attr("class", "btn btn-outline-secondary add-podcast-button")
-            .text("Add 5 podcasts with similar descriptions")
+            .text("Add some podcasts with similar descriptions")
     }
     $("#d3-podcast-info").fadeOut(250, function () { $(this).empty(); })
     setTimeout(function() {
@@ -328,7 +335,7 @@ function update_info_sidebar (podcast) {
                     .attr("id", "add-listener-button")
                     .attr("data-s-id", podcast.id)
                     .attr("class", "btn btn-outline-secondary add-podcast-button")
-                    .text("Add 5 podcasts with similar listeners")
+                    .text("Add some podcasts with similar listeners")
             )
             .fadeIn(500)
         }, 300)
