@@ -3,13 +3,16 @@ import podrex_db_utils as db
 import pickle
 from random import shuffle
 from flask import Flask, render_template, request, jsonify, g
-from model import PodcastRecommender
+from model import PodcastRecommender, bonuses, pairwise_dist_2d
+from graph import d3Graph
 
 app = Flask(__name__)
 
 model = PodcastRecommender()
 with open("podcast_pid_list.pickle", "rb") as in_pickle:
     podcast_pid_list = pickle.load(in_pickle)
+with open("pid_lookup.pickle", "rb") as in_pickle:
+    pid_lookup = pickle.load(in_pickle)
 
 def get_db():
     conn = getattr(g, '_database', None)
