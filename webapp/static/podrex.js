@@ -465,5 +465,54 @@ destroy_card = function(){
     dismissed.push($(this).attr("data-s-id"))
     $(this).closest(".card-col").fadeOut(500, function() { $(this).remove(); });
 };
+
+search_box = function() {
+    $("#search-button").before(
+        $("<input/>")
+            .attr("id", "text-search")
+            .attr("class", "add-podcast-button")
+            .attr("style","width:95%;")
+            .attr("placeholder", "ex. data science")
+    )
+    .attr("data-clicked","true")
+    .text("Search");
+
+    $('#text-search').keypress(function(e){
+        if(e.which == 13){//Enter key pressed
+            $('#search-button').click();//Trigger search button click event
+        }
+    });
+}
+
+$("#search-button").on("click", function (){
+    if ($(this).attr("data-clicked") === "false") {
+        search_box()
+    } else {
+        submit_text_search($("#text-search").val())
+    }
+});
+
+submit_text_search = function(text){
+    $(".card").fadeOut(500, function() { $(this).remove(); })
+    $.post({
+        url: "/text-search/",
+        contentType: "application/json",
+        data: JSON.stringify({"search":text}),
+        success: function(result){
+            if (!$("#search-results").length ){
+                $("#main-content").append(
+                    $("<div/>")
+                    .attr("id", "search-results")
+                    .attr("class", "card-deck")
+                )
+            } else {
+                $("#search-results").fadeOut(300, function() { $(this).empty(); });
+            }
+            setTimeout(function () { populate_cards(result, "search-results"); }, 350)
+            $("#search-results").fadeIn(350);
+            create_save_button()
+        }
+    });
+};
 let dismissed = []
 $(chosen_listener())
