@@ -1,20 +1,27 @@
 # Python functions for creating a d3 network graph
 
-import pickle
+import numpy as np
+import podrex_db_utils as db
+from itertools import combinations, product
 
-def five_by_listeners(conn, podcast):
-    """Returns the five podcasts with the most shared listeners"""
-    cursor = conn.cursor()
-    five_pods = []
-    cursor.execute("SELECT * FROM relationships "
-                   "WHERE (podcast_1 = (%s)) "
-                   "OR (podcast_2 = (%s)) "
-                   "ORDER BY listeners desc "
-                   "LIMIT 5", (podcast, podcast))
-    results = cursor.fetchall()
-    for result in results:
-        if result[0] == podcast:
-            five_pods.append((result[1], result[2]))
+class d3Graph:
+    def __init__(self, nodes, bonus_df, lookup_dict, graph=None):
+        """Creates and updates json-like data object for use in a d3
+        force directed graph
+
+        Parameters:
+        nodes (list): spark podcast ids corresponding to podcasts sent from
+            webapp
+        bonus_df (pd.DataFrame): dataframe containing "bonuses"
+        lookup_dict (dict): spark_pid:itunes_id key:value lookup
+        """
+        self.bonus_df = bonus_df
+        self.lookup_dict = lookup_dict
+        self.new_nodes = []
+        self.old_nodes = []
+        if graph:
+            self.graph = graph
+            self.nodes = graph["nodes"].copy()
         else:
             five_pods.append((result[0], result[2]))
     cursor.close()
