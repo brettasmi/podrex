@@ -114,14 +114,19 @@ def show_predictions():
     """
     likes = request.args.getlist("like")
     dismissed = request.args.getlist("dismissed")
+    search_cards = request.args.getlist("card")
     conn = get_db()
     try:
         indices = [int(like) for like in likes]
         ratings = [5 for podcast in range(len(indices))]
         dismissed = [int(dnl) for dnl in dismissed]
-        predictions = model.fit_predict(ratings, indices, dismissed)
+        if len(search_cards) == 0:
+            predictions = model.fit_predict(ratings, indices, dismissed)
+        else:
+            predictions = [int(search_card) for search_card in search_cards]
         cards = get_cards(predictions)
-        return render_template("recommendations.html", cards=cards)
+        id_dict = {"liked":indices, "recommended":[card["sid"] for card in cards]}
+        return render_template("recommendations.html", cards=cards, ids=id_dict)
     except:
         return render_template("sorry.html")
 
