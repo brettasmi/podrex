@@ -1,4 +1,3 @@
-// partially from Matt Drury - https://github.com/madrury/madrury.github.io/blob/master/smoothers/js/parameter-ui.js
 get_favorites = function() {
     let fave_parameters = {};
     let favorites = document.getElementsByClassName("chosen-select-deselect");
@@ -21,6 +20,14 @@ get_thumbs = function() {
         }
     }
     return results;
+};
+get_search_sids = function() {
+    let search_cards = $(".card-body")
+    let search_sids = []
+    for (let curr_card of search_cards) {
+        search_sids.push($(curr_card).attr("data-s-id"))
+    }
+    return search_sids
 };
 submit = function() {
     fave_parameters = get_favorites()
@@ -47,25 +54,47 @@ submit = function() {
                 }
                 $(".thumbs-up").not(".active").closest(".card-col").fadeOut(750, function(){$(this).remove(); });
                 populate_cards(result, "recommendations")
+                create_save_button()
             };
         }
     });
 }
+
+create_save_button = function() {
+    if (!$("#save-button").length ) {
+        $("<button/>")
+            .attr("id","save-button")
+            .attr("class", "btn btn-primary add-podcast-button")
+            .text("Save and Visualize")
+            .hide()
+            .appendTo("#welcome-text")
+            .fadeIn(1000)
+
+        $("#save-button").on("click", save_recommendations)
+    }
+}
+
 save_recommendations = function(result) {
-    $.post({
-        url: "/predictions/",
-        contentType: "application/json",
-        data: JSON.stringify({
-            "favorites": fave_parameters,
-            "thumbs": thumbs
-        }),
-        success: function(result) {
-            //
-            {
-                window.location.href = '/recommendations/' + result;
-            };
-        }
-    });
+    let likes = []
+    let search_results = []
+    if ($("#search-results").length ) {
+        console.log("hello")
+        search_results = search_results.concat(get_search_sids())
+        console.log(search_results)
+    } else {
+        likes = likes.concat(Object.keys(get_favorites()), Object.keys(get_thumbs()))
+    }
+    let go_url = "/recommendations/?"
+    for (let like of likes) {
+        go_url += ("like=" + like + "&")
+    }
+    for (let dnr of dismissed) {
+        go_url += ("dismissed=" + dnr + "&")
+    }
+    for (let search_result of search_results) {
+        go_url += ("card="+ search_result + "&")
+    }
+    window.location.href = go_url
 };
 thumbs_listener = function() {
     let id = $(this).attr('id'); // div id
