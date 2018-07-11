@@ -118,65 +118,67 @@ submit = function(){
 }
 
 visualize = function(){
-    $("#saved-recommendations")
-        .before($("<div/>").attr("class", "row")
-        .append(
-            $("<div/>")
-                .attr("id", "graph")
-                .attr("class", "chart justify-content-center text-center col-md-8 col-lg-9 col-sm-12"))
-        .append(
-            $("<div/>")
-                .attr("id", "d3-podcast-info")
-                .attr("class", "justify-content-center text-center col-md-4 col-lg-3 col-sm-12")
-                .text("Click a circle to see more information about the podcast").fadeIn(3000)
-        ))
-        .append(
-            $("<div/>")
-            .attr("class", "modal fade")
-            .attr("id", "d3modal")
-            .attr("tabindex", "-1")
-            .attr("role", "dialog")
-            .attr("aria-hidden", "true")
+    if (!$("#graph").length) {
+        $("#saved-recommendations")
+            .before($("<div/>").attr("class", "row")
             .append(
                 $("<div/>")
-                .attr("class", "modal-dialog")
-                .attr("role", "document")
+                    .attr("id", "graph")
+                    .attr("class", "chart justify-content-center text-center col-md-8 col-lg-9 col-sm-12"))
+            .append(
+                $("<div/>")
+                    .attr("id", "d3-podcast-info")
+                    .attr("class", "justify-content-center text-center col-md-4 col-lg-3 col-sm-12")
+                    .text("Click a circle to see more information about the podcast").fadeIn(3000)
+            ))
+            .append(
+                $("<div/>")
+                .attr("class", "modal fade")
+                .attr("id", "d3modal")
+                .attr("tabindex", "-1")
+                .attr("role", "dialog")
+                .attr("aria-hidden", "true")
                 .append(
-                    $("<div/>").attr("class", "modal-content")
+                    $("<div/>")
+                    .attr("class", "modal-dialog")
+                    .attr("role", "document")
                     .append(
-                        $("<div/>").attr("class", "modal-header")
+                        $("<div/>").attr("class", "modal-content")
                         .append(
-                            $("<button/>")
-                            .attr("class", "close")
-                            .attr("data-dismiss", "modal")
-                            .attr("aria-label", "Close")
-                            .attr("title", "Close description box")
+                            $("<div/>").attr("class", "modal-header")
                             .append(
-                                $("<span/>").attr("aria-hidden", "true").html("&times;")
+                                $("<button/>")
+                                .attr("class", "close")
+                                .attr("data-dismiss", "modal")
+                                .attr("aria-label", "Close")
+                                .attr("title", "Close description box")
+                                .append(
+                                    $("<span/>").attr("aria-hidden", "true").html("&times;")
+                                )
                             )
                         )
-                    )
-                    .append(
-                        $("<div/>").attr("class", "modal-body")
-                            .append($("<p/>").attr("id", "d3-podcast-description"))
-                    )
-                    .append(
-                        $("<div/>")
-                        .attr("class", "modal-footer")
                         .append(
-                            $("<button/>")
-                            .attr("class", "btn btn-secondary")
-                            .attr("data-dismiss", "modal")
-                            .text("Close")
+                            $("<div/>").attr("class", "modal-body")
+                                .append($("<p/>").attr("id", "d3-podcast-description"))
+                        )
+                        .append(
+                            $("<div/>")
+                            .attr("class", "modal-footer")
+                            .append(
+                                $("<button/>")
+                                .attr("class", "btn btn-secondary")
+                                .attr("data-dismiss", "modal")
+                                .text("Close")
+                            )
                         )
                     )
                 )
             )
-        )
-        setup() // from d3app.js to set up svg params
-        render() // from d3app.js to render first graph
-        // get graph json
-        // start d3
+            setup() // from d3app.js to set up svg params
+            render() // from d3app.js to render first graph
+            // get graph json
+            // start d3
+        }
 };
 get_graph = function(click_pod=null, update_type=null) {
     $.post({
