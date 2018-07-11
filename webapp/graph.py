@@ -30,6 +30,7 @@ class d3Graph:
         """Returns the five podcasts with the most shared listeners"""
         self.new_nodes = []
         podcast = self.lookup_dict[podcast]
+        podcast_list = [self.lookup_dict[i] for i in podcast_list]
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM relationships "
                        "WHERE (podcast_1 = %(podcast)s "
