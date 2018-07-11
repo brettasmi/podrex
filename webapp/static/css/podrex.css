@@ -26,6 +26,9 @@
 .full-width {
     width:100%;
 }
+img.full-width {
+    max-width:300px;
+}
 .width-60 {
     width:60%;
     margin-bottom:0.2rem;
