@@ -155,19 +155,12 @@ def get_graph():
         update_pod = int(update_pod)
     incoming_graph = data["graph"]
     if incoming_graph:
-        # nodes_list = incoming_graph["nodes"].copy()
         edge_list = incoming_graph["edges"].copy()
-        # incoming_graph["nodes"] = [{"podcast_id":i["podcast_id"],
-        #     "podcast_name":i["podcast_name"], "id":i["id"],
-        #     "description":i["description"], "itunes_url":i["itunes_url"],
-        #     "stitcher_url":i["stitcher_url"], "website_url":i["website_url"],
-        #     "pop":i["pop"], "size":i["size"]} for i in nodes_list]
         incoming_graph["edges"] = [{"source":i["source"]["id"],
                           "target":i["target"]["id"],
                           "value":i["value"]} for i in edge_list]
         network = d3Graph(all_podcasts, bonuses, pid_lookup, incoming_graph)
         network.old_nodes = [int(i["id"]) for i in incoming_graph["nodes"]]
-        #print(network.graph["edges"][0])
     else:
         network = d3Graph(all_podcasts, bonuses, pid_lookup)
     conn = get_db()
