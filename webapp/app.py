@@ -147,8 +147,7 @@ def get_graph():
     podcasts["liked"] = [int(podcast) for podcast in data["podcasts"]["liked"]]
     podcasts["recommended"] = [int(podcast)
                                for podcast in data["podcasts"]["recommended"]]
-    all_podcasts = podcasts["liked"].copy()
-    all_podcasts.extend(podcasts["recommended"])
+    all_podcasts = [i for sublist in podcasts.values() for i in sublist]
     update_type = data["update_type"]
     update_pod = data["update_podcast"]
     if update_pod:
@@ -160,16 +159,15 @@ def get_graph():
                           "target":i["target"]["id"],
                           "value":i["value"]} for i in edge_list]
         network = d3Graph(all_podcasts, bonuses, pid_lookup, incoming_graph)
-        network.old_nodes = [int(i["id"]) for i in incoming_graph["nodes"]]
     else:
         network = d3Graph(all_podcasts, bonuses, pid_lookup)
     conn = get_db()
     if update_type == "nlp":
         network.five_by_nlp(update_pod, pairwise_dist_2d)
     elif update_type == "listeners":
-        network.five_by_listeners(conn, update_pod, network.old_nodes)
+        network.five_by_listeners(conn, update_pod)
     podcasts["new_nodes"] = network.new_nodes.copy()
-    id_dict = {i:set(podcasts[i]) for i in podcasts} # move inside class
+    id_dict = {i:set(podcasts[i]) for i in podcasts}
     return jsonify(network.construct_graph(conn, id_dict))
 
 @app.teardown_appcontext

@@ -18,19 +18,21 @@ class d3Graph:
         self.bonus_df = bonus_df
         self.lookup_dict = lookup_dict
         self.new_nodes = []
-        self.old_nodes = []
         if graph:
             self.graph = graph
             self.nodes = graph["nodes"].copy()
+            self.old_node_ids = set([int(i["id"])
+                                    for i in graph["nodes"]])
         else:
             self.graph = {"edges": [], "nodes": []}
             self.nodes = set(nodes)
+            self.old_node_ids = []
 
-    def five_by_listeners(self, conn, podcast, podcast_list):
+    def five_by_listeners(self, conn, podcast):
         """Returns the five podcasts with the most shared listeners"""
         self.new_nodes = []
         podcast = self.lookup_dict[podcast]
-        podcast_list = [self.lookup_dict[i] for i in podcast_list]
+        podcast_list = [self.lookup_dict[i] for i in self.old_node_ids]
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM relationships "
                        "WHERE (podcast_1 = %(podcast)s "
@@ -58,8 +60,9 @@ class d3Graph:
         if podcast > 3010:
             return
         for pod in np.argsort(dist_matrix[podcast, :])[:5]:
-            self.nodes.append(int(pod))
-            self.new_nodes.append(int(pod))
+            if pod not in self.old_node_ids:
+                self.nodes.append(int(pod))
+                self.new_nodes.append(int(pod))
 
     def _get_listener_overlap(self, conn, podcast_1, podcast_2):
         """Returns the count of listeners shared by podcast_1 and podcast_2"""
@@ -78,10 +81,10 @@ class d3Graph:
 
     def construct_graph(self, conn, id_dict):
         """Returns initial d3 graph"""
-        if len(self.old_nodes) == 0:
+        if len(self.old_node_ids) == 0:
             nodes_combos = [i for i in combinations(self.nodes, 2)]
         else:
-            nodes_combos = [i for i in product(self.new_nodes, self.old_nodes)]
+            nodes_combos = [i for i in product(self.new_nodes, self.old_node_ids)]
         for nodes in nodes_combos:
             link = self._get_listener_overlap(conn, nodes[0], nodes[1])
             if link:
@@ -89,18 +92,18 @@ class d3Graph:
                     self.graph["edges"].append({"source": str(nodes[0]),
                                             "target": str(nodes[1]),
                                             "value": int(np.log(link))-1})
-        if len(self.old_nodes) == 0:
+        if len(self.old_node_ids) == 0:
             nodes_data = db.get_podcast_info(conn, self.nodes)
         else:
-            nodes_data = db.get_podcast_info(conn, self.new_nodes)
+            if len(self.new_nodes) > 0:
+                nodes_data = db.get_podcast_info(conn, self.new_nodes)
+            else:
+                nodes_data = []
         for data_list in nodes_data:
             data_list.extend(list(self._get_bonus(data_list[2], self.bonus_df)))
             self.graph["nodes"].append(self._make_node_dict(data_list))
-        self.graph["nodes"] = list({value["id"]:value for value in self.graph["nodes"]}.values())
-        #print(id_dict)
         for node_data in self.graph["nodes"]:
             node_data["status"] = self._get_status(int(node_data["id"]), id_dict)
-            #print(node_data["status"])
         return self.graph
 
     def _make_node_dict(self, data):
