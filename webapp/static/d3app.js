@@ -123,7 +123,7 @@ function render(graph=null, update_podcast=null, update_type=null) {
 
         // link selection, data handling
         link = link
-            .data(graph.edges, function(d) { return d.source + "-" + d.target; });
+            .data(graph.edges, function(d) { return d.source.id + "-" + d.target.id; });
 
         // link general update pattern with attrTween to keep links connected to disappearing nodes
         link
@@ -159,7 +159,7 @@ function render(graph=null, update_podcast=null, update_type=null) {
             .call(function(link) {
                 link
                 .transition()
-                .duration(500)
+                .duration(1500)
                 .attr("stroke-width", function(d) { return d.value; })
             })
             .merge(link);
