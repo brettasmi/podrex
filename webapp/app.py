@@ -100,13 +100,6 @@ def predict():
     predictions = model.fit_predict(ratings, indices, dismissed)
     return jsonify(get_cards(predictions))
 
-@app.route("/save_recommendations/", methods=["POST"])
-def save_recommendations():
-    """
-    """
-    unique_id = db.set_unique_page(conn, predictions) #  func to make unique id
-    return unique_id
-
 @app.route("/recommendations/")
 def show_predictions():
     """
