@@ -71,7 +71,6 @@ def predict():
     Gets predictions from the model and returns html
     page and podcasts to render
     """
-    conn = get_db()
     user_inputs = request.json
     favorites = user_inputs["favorites"]
     thumbs = user_inputs["thumbs"]
@@ -104,7 +103,6 @@ def show_predictions():
     likes = request.args.getlist("like")
     dismissed = request.args.getlist("dismissed")
     search_cards = request.args.getlist("card")
-    conn = get_db()
     try:
         indices = [int(like) for like in likes]
         ratings = [5 for podcast in range(len(indices))]
@@ -128,7 +126,6 @@ def about_page():
 def text_search():
     """ Returns recommendations based on a text-based search """
     search = request.json
-    conn = get_db()
     model = PodcastRecommender()
     results = model.nlp_search(search["search"])
     return jsonify(get_cards(results))
