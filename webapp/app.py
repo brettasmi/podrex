@@ -15,6 +15,8 @@ with open("pid_lookup.pickle", "rb") as in_pickle:
     pid_lookup = pickle.load(in_pickle)
 
 def get_db():
+    """ Returns a connection to the podrex db that can be cleanly closed by
+    flask """
     conn = getattr(g, '_database', None)
     if conn is None:
         conn = g._database = db.connect_db()
@@ -38,17 +40,13 @@ def get_cards(indices):
 
 @app.route("/")
 def index():
-    """
-    Returns home page to render to user
-    """
+    """ Returns home page to render to user """
     return render_template("index.html",
                            podcasts=podcast_pid_list)
 
 @app.route("/dd-update/", methods=["POST"])
 def dropdown_update():
-    """
-    Returns data to update the dropdown card
-    """
+    """ Returns data to update the dropdown card """
     user_input = request.json
     podcasts = []
     try:
@@ -102,9 +100,7 @@ def predict():
 
 @app.route("/recommendations/")
 def show_predictions():
-    """
-    Returns personalized recommendation page to the user.
-    """
+    """ Returns personalized recommendation page to the user """
     likes = request.args.getlist("like")
     dismissed = request.args.getlist("dismissed")
     search_cards = request.args.getlist("card")
@@ -125,13 +121,12 @@ def show_predictions():
 
 @app.route("/about/")
 def about_page():
+    """ Return the podrex about page """
     return render_template("about.html")
 
 @app.route("/text-search/", methods=["POST"])
 def text_search():
-    """
-    Returns recommendations based on a text-based search
-    """
+    """ Returns recommendations based on a text-based search """
     search = request.json
     conn = get_db()
     model = PodcastRecommender()
@@ -141,7 +136,6 @@ def text_search():
 @app.route("/graph/", methods=["POST"])
 def get_graph():
     """Return json for d3 force directed graph given the passed args"""
-    # make sure to put try except this
     data = request.json
     podcasts = {}
     podcasts["liked"] = [int(podcast) for podcast in data["podcasts"]["liked"]]
