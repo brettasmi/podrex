@@ -53,8 +53,8 @@ class d3Graph:
         cursor.close()
 
     def five_by_nlp(self, podcast, dist_matrix):
-        """Returns `podcast`'s five most closely related podcasts and their shared
-        listener count. Will not work for spark_pid > 3010.
+        """Returns `podcast`'s five most closely related podcasts and their
+        shared listener count. Will not work for spark_pid > 3010.
         """
         self.new_nodes = []
         if podcast > 3010:
@@ -64,34 +64,37 @@ class d3Graph:
                 self.nodes.append(int(pod))
                 self.new_nodes.append(int(pod))
 
-    def _get_listener_overlap(self, conn, podcast_1, podcast_2):
+    def _get_listener_overlap(self, conn):
         """Returns the count of listeners shared by podcast_1 and podcast_2"""
-        podcasts = [self.lookup_dict[i] for i in
-            [podcast_1, podcast_2, podcast_2, podcast_1]]
         cursor = conn.cursor()
-        cursor.execute("SELECT listeners FROM relationships "
-                        "WHERE (podcast_1 = (%s) AND podcast_2 = (%s)) "
-                        "OR (podcast_1 = (%s) AND podcast_2 = (%s))",
-                        podcasts)
-        result = cursor.fetchone()
-        if result:
+        if len(self.old_node_ids) > 0:
+            ids = self.new_nodes.copy()
+            ids.extend(self.old_node_ids)
+            podcast_list = [self.lookup_dict[i] for i in ids]
+        else:
+            podcast_list = [self.lookup_dict[i] for i in self.nodes]
+        cursor.execute("SELECT * "
+                       "FROM relationships "
+                       "WHERE podcast_1 IN %(podcasts)s "
+                       "AND podcast_2 IN %(podcasts)s ",
+                       {"podcasts":tuple(podcast_list)})
+        result = cursor.fetchall()
+        if len(result) > 0:
             cursor.close()
-            return (result[0])
+            return result
         cursor.close()
 
     def construct_graph(self, conn, id_dict):
         """Returns initial d3 graph"""
-        if len(self.old_node_ids) == 0:
-            nodes_combos = [i for i in combinations(self.nodes, 2)]
-        else:
-            nodes_combos = [i for i in product(self.new_nodes, self.old_node_ids)]
-        for nodes in nodes_combos:
-            link = self._get_listener_overlap(conn, nodes[0], nodes[1])
-            if link:
-                if link > 10:
-                    self.graph["edges"].append({"source": str(nodes[0]),
-                                            "target": str(nodes[1]),
-                                            "value": int(np.log(link))-1})
+        #nodes_combos = combinations(self.nodes, 2)
+        links = self._get_listener_overlap(conn)
+        if links:
+            for link in links:
+                if link[2] > 10:
+                    self.graph["edges"].append(
+                        {"source": str(self.lookup_dict[link[0]]),
+                         "target": str(self.lookup_dict[link[1]]),
+                         "value": int(np.log(link[2]))-1})
         if len(self.old_node_ids) == 0:
             nodes_data = db.get_podcast_info(conn, self.nodes)
         else:
