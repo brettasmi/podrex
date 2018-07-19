@@ -65,7 +65,6 @@ function render(graph=null, update_podcast=null, update_type=null) {
             "update_type": update_type,
             "graph": graph}), function(error, graph){
                 if (error) { throw error; }
-                console.log(graph)
                 graph_data = graph
          // node selection and data handling
         node = node
