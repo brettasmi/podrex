@@ -86,7 +86,6 @@ class d3Graph:
 
     def construct_graph(self, conn, id_dict):
         """Returns initial d3 graph"""
-        #nodes_combos = combinations(self.nodes, 2)
         links = self._get_listener_overlap(conn)
         if links:
             for link in links:
