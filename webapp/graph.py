@@ -43,6 +43,7 @@ class d3Graph:
                        "LIMIT 5", {"podcast":podcast,
                             "podcasts":tuple(podcast_list)})
         results = cursor.fetchall()
+        cursor.close()
         for result in results:
             if result[0] == podcast:
                 self.nodes.append(self.lookup_dict[result[1]])
@@ -50,7 +51,7 @@ class d3Graph:
             else:
                 self.nodes.append(self.lookup_dict[result[0]])
                 self.new_nodes.append(self.lookup_dict[result[0]])
-        cursor.close()
+
 
     def five_by_nlp(self, podcast, dist_matrix):
         """Returns `podcast`'s five most closely related podcasts and their
@@ -82,10 +83,9 @@ class d3Graph:
                        "AND podcast_2 IN %(podcasts)s ",
                        {"podcasts":tuple(podcast_list)})
         result = cursor.fetchall()
-        if len(result) > 0:
-            cursor.close()
-            return result
         cursor.close()
+        if len(result) > 0:
+            return result
 
     def construct_graph(self, conn, id_dict):
         """Returns initial d3 graph"""

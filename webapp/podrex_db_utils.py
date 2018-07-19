@@ -224,8 +224,8 @@ def get_podcast_info(conn, podcast_list):
                        "from podcasts where spark_pid in %(spark_pids)s",
                        {"spark_pids":tuple(podcast_list)})
         podcasts_raw = cursor.fetchall()
-        podcasts_data = [list(i) for i in podcasts_raw]
         cursor.close()
+        podcasts_data = [list(i) for i in podcasts_raw]
         return podcasts_data
     except:
         logging.exception("failed to get podcast_info")
@@ -245,19 +245,18 @@ def get_prediction_info(conn, unique_id):
     Returns
     -------
     recommendation_data (list of lists): list of lists of [podcast_id,
-        pocast_name, spark_pid, podcast_description]
+        podcast_name, spark_pid, podcast_description]
     """
     cursor = conn.cursor()
     try:
         cursor.execute("select predictions from user_data where user_id = (%s)",
                        [unique_id])
         results = cursor.fetchone()[0]
+        cursor.close()
     except:
         logging.exception("failed to get unique_user_id")
         cursor.close()
         conn.rollback()
         return None
-
-    cursor.close()
     recommendation_data = get_podcast_info(conn, results)
     return recommendation_data
