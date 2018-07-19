@@ -59,10 +59,13 @@ class d3Graph:
         self.new_nodes = []
         if podcast > 3010:
             return
-        for pod in np.argsort(dist_matrix[podcast, :])[:5]:
-            if pod not in self.old_node_ids:
-                self.nodes.append(int(pod))
-                self.new_nodes.append(int(pod))
+        for pod in np.argsort(dist_matrix[podcast, :]):
+            if len(self.new_nodes) < 5:
+                if pod not in self.old_node_ids:
+                    self.nodes.append(int(pod))
+                    self.new_nodes.append(int(pod))
+            else:
+                return
 
     def _get_listener_overlap(self, conn):
         """Returns the count of listeners shared by podcast_1 and podcast_2"""
