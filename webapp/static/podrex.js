@@ -131,7 +131,7 @@ chosen_listener = function() {
                         .attr("href", "#")
                         .append(
                             $("<img/>")
-                            .attr("src", "https://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/" + result["podcast_art_id"] + ".jpg")
+                            .attr("src", "https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/artwork/" + result["podcast_art_id"] + ".jpg")
                             .attr("style", "margin-top:1rem;width:60%;height:60%;margin-left:20%;margin-right:20%;")
                             .addClass("card-img-top")
                         )
@@ -372,7 +372,7 @@ populate_cards = function(card_list, result_type){
                               .attr("href", "#")
                                  .append(
                                      $("<img/>")
-                                      .attr("src", "https://podcasts-dragon-nba-who.s3-website-us-west-2.amazonaws.com/static/artwork/"+card["art_id"]+".jpg")
+                                      .attr("src", "	https://s3-us-west-2.amazonaws.com/podcasts-dragon-nba-who/static/artwork/"+card["art_id"]+".jpg")
                                       .addClass("card-img-top")
                                       )
                            )
